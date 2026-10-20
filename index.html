@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bench 100">
+    <meta name="theme-color" content="#080d1a">
+    <meta name="format-detection" content="telephone=no">
+    <title>Bench 100kg Sci-Tracker | Prehab & DUP Edition (Zoptymalizowana)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: { 850: '#151e2e', 900: '#0f172a', 950: '#080d1a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #080d1a; color: #f1f5f9; }
+        .glass-card { -webkit-backdrop-filter: blur(12px); background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); }
+        .breath-circle { transition: all 1s ease-in-out; }
+        input[type="number"], input[type="text"] { background-color: #080d1a; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        html { -webkit-text-size-adjust: 100%; }
+        body { min-height: 100dvh; padding-bottom: calc(6rem + env(safe-area-inset-bottom)) !important; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overscroll-behavior-y: none; }
+        header.sticky { padding-top: calc(0.75rem + env(safe-area-inset-top)); padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        main { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        #timerBar { padding-bottom: calc(0.625rem + env(safe-area-inset-bottom)); padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        #timerBar button { flex-shrink: 0; }
+        .no-scrollbar { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @media (pointer: coarse) {
+            input, select, textarea { font-size: 16px !important; }
+            button { min-height: 44px; }
+            .set-check { min-width: 44px; }
+            input[type="checkbox"] { width: 1.5rem; height: 1.5rem; }
+            input[type="text"], input[type="number"] { min-height: 44px; }
+        }
+        .tech-panel { display: none; }
+        .tech-panel.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen pb-28 antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- GÓRNY PASEK NAWIGACYJNY -->
+    <header class="sticky top-0 z-30 glass-card border-b border-slate-800 px-4 py-3 shadow-lg">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-mono font-bold text-lg">100</div>
+                    <div>
+                        <h1 class="font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-2">
+                            Road to 100 kg <span class="text-xs font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">DUP & Prehab</span>
+                        </h1>
+                        <p class="text-xs text-slate-400">Biomechanika stawów | Chwyty neutralne | Rotacja PPL</p>
+                    </div>
+                </div>
+                <button onclick="toggleModal('settingsModal')" class="sm:hidden p-2 rounded-lg bg-slate-800 text-slate-300 text-xs border border-slate-700">⚙️</button>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex-1 sm:w-64">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-400">Est. 1RM Bench: <strong id="headerBench1RM" class="text-white font-mono">70.0 kg</strong></span>
+                        <span id="headerProgressPct" class="text-blue-400 font-mono font-semibold">70.0%</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+                        <div id="headerProgressBar" class="h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-500" style="width: 70%"></div>
+                    </div>
+                </div>
+                <button onclick="toggleModal('settingsModal')" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs border border-slate-700">⚙️ Kalibracja 1RM</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 pt-5 space-y-6">
+        <!-- ZAKŁADKI DNI -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div class="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap" id="dayTabs">
+                <button onclick="selectDay('upperA')" id="tab-upperA" class="day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">Pon: Upper A (Siła Max)</button>
+                <button onclick="selectDay('lowerA')" id="tab-lowerA" class="day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">Wt: Lower A (Siad/Core)</button>
+                <button onclick="selectDay('upperB')" id="tab-upperB" class="day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">Czw: Upper B (Pauza/Objętość)</button>
+                <button onclick="selectDay('lowerB')" id="tab-lowerB" class="day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">Pt: Lower B (Ciąg/Prehab)</button>
+                <button onclick="selectDay('saturday')" id="tab-saturday" class="day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition">Sob: Mobilność & FRC</button>
+            </div>
+            <div class="grid grid-cols-3 md:flex gap-1.5">
+                <button onclick="switchView('workout')" id="viewBtn-workout" class="px-2 md:px-3 py-2 rounded-lg text-xs leading-tight text-center font-semibold bg-slate-800 text-white border border-slate-700">🏋️ Trening</button>
+                <button onclick="switchView('history')" id="viewBtn-history" class="px-2 md:px-3 py-2 rounded-lg text-xs leading-tight text-center font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">📊 Wykresy & Dziennik</button>
+                <button onclick="switchView('knowledge')" id="viewBtn-knowledge" class="px-2 md:px-3 py-2 rounded-lg text-xs leading-tight text-center font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">🧬 Prehab Stawów</button>
+            </div>
+        </div>
+
+        <!-- WIDOK 1: AKTYWNY TRENING -->
+        <div id="view-workout" class="space-y-6">
+            <div class="glass-card rounded-xl p-4 border-l-4 border-l-blue-500 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="dayBadge" class="text-xs font-mono uppercase px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold"></span>
+                        <h2 id="dayTitle" class="text-lg font-bold text-white"></h2>
+                    </div>
+                    <p id="dayDesc" class="text-xs sm:text-sm text-slate-300 mt-1"></p>
+                </div>
+                <div class="flex items-center gap-3 self-start md:self-center shrink-0">
+                    <div class="text-right" id="dayTargetContainer">
+                        <span class="block text-[11px] text-slate-400 uppercase font-mono">Bój Główny</span>
+                        <span id="dayTargetWeight" class="text-xl font-mono font-bold text-emerald-400"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROZGRZEWKA -->
+            <section class="glass-card rounded-xl overflow-hidden">
+                <div class="bg-slate-800/70 px-4 py-3 border-b border-slate-700/70 flex items-center justify-between">
+                    <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2"><span class="text-amber-400">A</span> Przygotowanie i Mobilność</h3>
+                    <span class="text-[11px] text-amber-300 font-mono">Brak statycznego rozciągania przed sesją</span>
+                </div>
+                <div class="p-4 space-y-3" id="warmupContainer"></div>
+            </section>
+
+            <!-- GŁÓWNA PRACA SIŁOWA -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2"><span class="text-blue-400">B</span> Praca Główna & Zamienniki Prehab</h3>
+                    <span class="text-xs text-slate-400 font-mono">Kliknij „🔄 Zamień” (dostosowane 1:1)</span>
+                </div>
+                <div id="exercisesContainer" class="space-y-4"></div>
+            </section>
+
+            <!-- SCHŁODZENIE & ODDECH -->
+            <section class="glass-card rounded-xl overflow-hidden">
+                <div class="bg-slate-800/70 px-4 py-3 border-b border-slate-700/70">
+                    <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2"><span class="text-emerald-400">C</span> Schłodzenie & Regulacja Układu Przywspółczulnego</h3>
+                </div>
+                <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-2 space-y-3" id="cooldownContainer"></div>
+                    <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 flex flex-col items-center justify-between text-center">
+                        <div>
+                            <h4 class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">Protokół Vagus Nerve (4-2-8s)</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Zmniejszenie tonusu mięśniowego po sesji</p>
+                        </div>
+                        <div class="my-4 relative flex items-center justify-center w-28 h-28">
+                            <div id="breathCircle" class="breath-circle w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center">
+                                <span id="breathText" class="text-xs font-mono font-bold text-emerald-300">Gotowy</span>
+                            </div>
+                        </div>
+                        <button onclick="toggleBreathing()" id="breathBtn" class="w-full py-2 rounded-lg bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">▶ Start</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FORMULARZ ZAPISU -->
+            <section id="saveSessionSection" class="glass-card rounded-xl p-5 border border-blue-500/30 space-y-4">
+                <h3 class="font-bold text-base text-white">📝 Dziennik Autoregulacji (DUP)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Status obciążenia stawów</label>
+                        <select id="jointStatus" class="w-full border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                            <option value="ok">🟢 Brak przeciążeń, pełna stabilność nadgarstka i barku</option>
+                            <option value="mild_shoulder">🟡 Lekkie uczucie ciągnięcia w torebce stawowej (bark)</option>
+                            <option value="pain_shoulder">🔴 Kłucie w barku/łokciu (Sugeruje zmianę na Floor Press/Hantle)</option>
+                            <option value="pain_wrist">🟠 Ból nadgarstków (Brak oporowania, zmień chwyt na neutralny)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Technika i siła chwytu</label>
+                        <select id="techQuality" class="w-full border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                            <option value="Pełna kontrola">⭐ Solidny chwyt, utrzymany kąt łokcia (45°), dobra trajektoria</option>
+                            <option value="Słaby chwyt">⚠️ Wyczerpanie chwytu (konieczność przejścia na thumbless/paski)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Regeneracja i OUN</label>
+                        <select id="sleepQuality" class="w-full border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                            <option value="Wysoka">⚡ Gotowość układu nerwowego, mocna dynamika</option>
+                            <option value="Umiarkowana">🔋 Standardowa sesja</option>
+                        </select>
+                    </div>
+                </div>
+                <textarea id="sessionNotes" rows="2" placeholder="Notatki biomechaniczne (np. ujemna faza pauzy stabilna, paski pomogły w ciągu)..." class="w-full border border-slate-700 rounded-lg p-3 text-xs text-white"></textarea>
+                <div id="adaptationAlert" class="hidden p-3.5 rounded-lg border text-xs space-y-1"></div>
+                <div class="flex justify-end pt-2">
+                    <button onclick="saveWorkoutSession()" class="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm transition shadow-lg">💾 Zapisz sesję i zaktualizuj obciążenia</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- WIDOK 2: WYKRESY I DZIENNIK -->
+        <div id="view-history" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card rounded-xl p-4 border border-slate-800">
+                    <h3 class="text-sm font-bold text-slate-300 text-center mb-2">Est. 1RM Bench Press (kg)</h3>
+                    <div class="relative h-56"><canvas id="rmChart"></canvas></div>
+                </div>
+                <div class="glass-card rounded-xl p-4 border border-slate-800">
+                    <h3 class="text-sm font-bold text-slate-300 text-center mb-2">Tonaż Treningowy (kg)</h3>
+                    <div class="relative h-56"><canvas id="tonnageChart"></canvas></div>
+                </div>
+            </div>
+            <div class="glass-card rounded-xl p-5 border border-slate-800">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-white">📊 Zapisane Sesje</h2>
+                    <button onclick="clearLogs()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 text-rose-300 text-xs border border-rose-800/50">🗑️ Wyczyść</button>
+                </div>
+                <div id="historyList" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- WIDOK 3: BIOMECHANIKA I PREWENCJA -->
+        <div id="view-knowledge" class="hidden space-y-6">
+            <div class="glass-card rounded-xl p-5 space-y-4">
+                <h2 class="text-lg font-bold text-white border-b border-slate-800 pb-2">🛡️ Stabilizacja Biomechaniczna w Drodze do 100 kg</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed text-slate-300">
+                    <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                        <h4 class="font-bold text-emerald-400 text-sm">1. Floor Press jako fundament bezpieczeństwa barku</h4>
+                        <p>Dumbbell Floor Press mechanicznie zatrzymuje zstępowanie ramienia przy ugięciu łokci do kąta 90°. To fizycznie zapobiega pogłębianiu rotacji wewnętrznej pod obciążeniem i uniemożliwia translację głowy kości ramiennej do przodu, natychmiastowo wyciszając ból przedniego aktonu.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                        <h4 class="font-bold text-blue-400 text-sm">2. Warianty chwytu a ochrona nadgarstków</h4>
+                        <p>Zastosowanie uchwytów V-bar na triceps oraz podciągań/ściągań chwytem neutralnym (równoległym) zdejmuje siły tnące i pronacyjne z nadgarstka. Podczas wyciskania sztangi niezbędny jest chwyt "Bulldog Grip", w którym gryf leży możliwie nisko przy przedramieniu, a kciuk jest delikatnie rotowany.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                        <h4 class="font-bold text-amber-400 text-sm">3. Zarządzanie zginaczami (Grip Fatigue)</h4>
+                        <p>Niestabilny chwyt ogranicza potencjał wygenerowania siły w łańcuchu ciągnącym (np. w najszerszym grzbietu). Przy ćwiczeniach takich jak Single Arm Cable Row czy podciąganie wskazane jest używanie wariantu chwytu otwartego (thumbless), z naciskiem na intencję "ciągnięcia z łokcia" zamiast dłoni. W ciągach stosuj paski.</p>
+                    </div>
+                    <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
+                        <h4 class="font-bold text-purple-400 text-sm">4. Transfer siły korpusu (AB Wheel & Leg Drive)</h4>
+                        <p>Wysoki poziom wytrzymałości siłowej antyprzeprostnej rdzenia (np. serie 15 powtórzeń w AB Wheel z kolan) umożliwia wygenerowanie bezwzględnej sztywności na ławce. Mocne napięcie cylindra brzusznego ułatwia prawidłowy "Leg drive", zapobiegając uginaniu się lędźwi L4-L5 podczas nacisku stóp na ziemię.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DOLNY PASEK STOPERA -->
+    <div id="timerBar" class="fixed bottom-0 w-full z-40 glass-card border-t border-slate-700/80 px-4 py-2.5 shadow-2xl">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 font-mono font-bold text-base" id="timerDisplay">00:00</div>
+                <div class="text-[11px] text-slate-400 hidden sm:block">Stoper przerw i izometrii:</div>
+            </div>
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button onclick="startRestTimer(45)" class="px-2 py-1.5 rounded bg-slate-800 text-slate-300 font-mono text-xs border border-slate-700">45s</button>
+                <button onclick="startRestTimer(60)" class="px-2 py-1.5 rounded bg-slate-800 text-slate-300 font-mono text-xs border border-slate-700">60s</button>
+                <button onclick="startRestTimer(90)" class="px-2 py-1.5 rounded bg-slate-800 text-slate-300 font-mono text-xs border border-slate-700">90s</button>
+                <button onclick="startRestTimer(120)" class="px-2 py-1.5 rounded bg-slate-800 text-slate-300 font-mono text-xs border border-slate-700">120s</button>
+                <button onclick="startRestTimer(180)" class="px-2 py-1.5 rounded bg-blue-950/80 text-blue-300 font-mono text-xs border border-blue-800/50">180s</button>
+                <button onclick="startRestTimer(210)" class="px-2 py-1.5 rounded bg-blue-950/80 text-blue-300 font-mono text-xs border border-blue-800/50">210s</button>
+                <button onclick="stopRestTimer()" class="px-2 py-1.5 rounded bg-rose-950/70 text-rose-300 font-mono text-xs border border-rose-800/50">Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL USTAWIEŃ -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 max-h-[90dvh] overflow-y-auto border border-slate-700 space-y-4 shadow-2xl">
+            <h3 class="font-bold text-white text-base">⚙️ Baza 1RM i Wyniki z Raportu</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Bench Press 1RM (kg)</label>
+                    <input type="number" id="inputBench1RM" step="2.5" inputmode="decimal" class="w-full border border-slate-700 rounded px-3 py-2 text-white">
+                    <span class="text-[11px] text-slate-400">Wyjście: 70.0 kg (60 kg x 5 powtórzeń)</span>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Back Squat 1RM (kg)</label>
+                    <input type="number" id="inputSquat1RM" step="2.5" inputmode="decimal" class="w-full border border-slate-700 rounded px-3 py-2 text-white">
+                    <span class="text-[11px] text-slate-400">Wyjście: 60.0 kg (Serie 45–50 kg na 6-8 powt.)</span>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Deadlift / RDL 1RM (kg)</label>
+                    <input type="number" id="inputDeadlift1RM" step="2.5" inputmode="decimal" class="w-full border border-slate-700 rounded px-3 py-2 text-white">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="toggleModal('settingsModal')" class="px-4 py-2 rounded-lg bg-slate-800 text-xs text-slate-300 border border-slate-700">Anuluj</button>
+                <button onclick="saveSettings()" class="px-4 py-2 rounded-lg bg-blue-600 text-xs text-white font-semibold">Zapisz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PROFIL STARTOWY
+        let userProfile = JSON.parse(localStorage.getItem('sciBench_profile_v5')) || { 
+            bench1RM: 70.0, 
+            squat1RM: 60.0, 
+            deadlift1RM: 85.0,  
+            activeDay: 'upperA' 
+        };
+        let workoutLogs = JSON.parse(localStorage.getItem('sciBench_logs_v5')) || [];
+        function roundWeight(val, step = 2.5) { return Math.round(val / step) * step; }
+        
+        // BAZA DANYCH TRENINGU
+        const programData = {
+            upperA: {
+                id: 'upperA', 
+                title: "Upper A: Siła Maksymalna & Ochrona Barku", 
+                badge: "DUP: High Intensity (82.5–87.5%)", 
+                desc: "Rekrutacja wysokoprogowych jednostek przy kątach łokci ok. 45°.", 
+                mainLiftKey: "bench", mainPct: 0.85, isMobilityDay: false,
+                warmup: [
+                    { name: "CARs Barków w płaszczyźnie łopatki", prescription: "2 serie × 5 rotacji" },
+                    { name: "Mobilizacja Th na rollerze (wyprost z klatki)", prescription: "2 serie × 8 wyprostów" },
+                    { name: "Band Pull-Apart (aktywacja m. podgrzebieniowego)", prescription: "2 serie × 15 powtórzeń" }
+                ],
+                exercises: [
+                    {
+                        id: "ua_bench", code: "B1", 
+                        name: "Barbell Bench Press (Wyciskanie sztangi leżąc)", 
+                        sets: 4, reps: "3–4", defaultReps: 4, tempo: "3-1-X-0", rpeTarget: "8–8.5", pctLabel: "85% 1RM", restSec: 210, 
+                        calcType: "bench", factor: 0.85, step: 2.5,
+                        cue: "Ochrona barków: trajektoria J-Curve (skos w tył) z chwytem Bulldog Grip. Próbuj 'zgiąć gryf w literę U', aby aktywować najszerszy grzbietu.",
+                        technique: [
+                            "Kąt łokci max. 45° w fazie ekscentrycznej (chroni torebkę prawego barku).",
+                            "Bulldog Grip na kościach przedramienia redukuje przeciążenie bocznego nadgarstka.",
+                            "Leg drive w 100% poziomy, bez ugięcia lędźwi."
+                        ],
+                        alt: {
+                            name: "Dumbbell Floor Press (Wariant Prewencyjny)",
+                            cue: "Idealny zamiennik przy bólu! Podłoga mechanicznie zatrzymuje łokieć przy 90°, odcinając ból barku.",
+                            technique: [
+                                "Chwyt pół-neutralny dla maksymalnego odciążenia stawu.",
+                                "Pełne zatrzymanie 1s, bez odbijania łokciami o ziemię.",
+                                "Szykuje grunt pod ciężary na hantlach 22.5–24 kg."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ua_row", code: "C1", 
+                        name: "Single Arm Cable Row (Brama 1:1 lub 2:1)", 
+                        sets: 4, reps: "10–12", defaultReps: 12, tempo: "2-1-1-1", rpeTarget: "8.0", pctLabel: "Horyzontalny Pull", restSec: 105, 
+                        calcType: "none", valOverride: "Stos", factor: 1, step: 0,
+                        cue: "Chwyt neutralny z pauzą 1s w maksymalnym spięciu. Optymalizuje Push-to-Pull ratio.",
+                        technique: [
+                            "Pociągnięcie z łokcia bez rotowania (skręcania) całego tułowia.",
+                            "Maksymalna kontrola powrotu uodparnia stabilizatory łopatki.",
+                            "Pamiętaj: 45–55kg (brama podwójna 2:1) lub 12.5–15kg (brama pojedyncza 1:1)."
+                        ],
+                        alt: {
+                            name: "Chest-Supported DB Row",
+                            cue: "Wiosłowanie w oparciu klatki jednorącz / oburącz na ławce.",
+                            technique: [
+                                "Oparcie izoluje lędźwie od przeciążeń osiowych.",
+                                "Utrzymuj łokcie przy ciele, z intencją przyciągania do biodra (kieszeni)."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ua_jmpress", code: "D1", 
+                        name: "JM Press (Sztanga prosta/łamana)", 
+                        sets: 3, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "7.5–8.0", pctLabel: "45% 1RM", restSec: 90, 
+                        calcType: "bench", factor: 0.45, step: 2.5,
+                        cue: "Ruch stanowiący złoty środek między wyciskaniem a francuzem. Buduje potężną siłę wyprostu na punkt krytyczny (sticking point).",
+                        technique: [
+                            "Opuszczanie sztangi w kierunku obojczyka/szyi.",
+                            "Przedramię spotyka się z bicepsem 2 cm nad klatką.",
+                            "Łokcie pod kątem ok. 45 stopni w stosunku do tułowia."
+                        ],
+                        alt: {
+                            name: "Triceps na wyciągu V-Bar (Izolacja - Stos)",
+                            cue: "Wąski V-bar całkowicie zdejmuje przeciążenie boczne z nadgarstków. Używaj przy bólu łokcia po sztandze.",
+                            technique: [
+                                "Utrzymuj łokcie dociśnięte do boku tułowia.",
+                                "Pełny wyprost z zatrzymaniem (1s) na samym dole ruchu.",
+                                "Brak kompensacji barkami."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ua_facepull", code: "E1", 
+                        name: "Face Pulls z liną (Stos)", 
+                        sets: 4, reps: "15", defaultReps: 15, tempo: "2-0-1-2", rpeTarget: "7.5", pctLabel: "Prehab Stożka", restSec: 60, 
+                        calcType: "none", valOverride: "Stos", factor: 1, step: 0,
+                        cue: "Fundamentalna prewencja stożka rotatorów z rotacją zewnętrzną w końcowej fazie.",
+                        technique: [
+                            "Linka ciągnięta do wysokości czoła z jednoczesnym rozrywaniem końcówek na zewnątrz.",
+                            "Zatrzymanie na końcu ruchu na 2 sekundy w pełnym skurczu m. podgrzebieniowego."
+                        ],
+                        alt: {
+                            name: "Wznosy bokiem z hantlami",
+                            cue: "Wysoki zakres 12–17 powtórzeń w płaszczyźnie łopatki (ok. 30° w przód).",
+                            technique: [
+                                "Kciuki lekko w górę dla bezpieczeństwa stawu barkowo-obojczykowego.",
+                                "Czysta technika bez 'bujania' ciałem (pauza na górze)."
+                            ]
+                        }
+                    }
+                ],
+                cooldown: [
+                    { name: "Pec stretch przy framudze 90°/120° (lekkie rozciąganie)", timerSec: 45 },
+                    { name: "Oddech Vagus Nerve (4-2-8s) - 3 min", timerSec: 180 }
+                ]
+            },
+            
+            lowerA: {
+                id: 'lowerA', 
+                title: "Lower A: Back Squat & Siła Antyprzeprostna", 
+                badge: "Lower & Superstiffness", 
+                desc: "Siła nóg i betonowanie core przy użyciu chwytów thumbless.", 
+                mainLiftKey: "squat", mainPct: 0.80, isMobilityDay: false,
+                warmup: [
+                    { name: "90/90 Hip Flow", prescription: "6 przejść na stronę" },
+                    { name: "McGill Big 3 (Izometria)", prescription: "Piramida 5-3-1 powt." }
+                ],
+                exercises: [
+                    {
+                        id: "la_sq", code: "B1", 
+                        name: "Barbell Back Squat (Chwyt Thumbless)", 
+                        sets: 4, reps: "6–8", defaultReps: 6, tempo: "3-1-X-0", rpeTarget: "8.0", pctLabel: "80% 1RM", restSec: 180, 
+                        calcType: "squat", factor: 0.80, step: 2.5,
+                        cue: "Chwyt thumbless (bez kciuka) ściąga napięcie z prawego barku przy retrakcji na sztandze.",
+                        technique: [
+                            "Maksymalna sztywność brzucha (Valsalva) chroni lędźwie.",
+                            "Kontrolowane tempo 3s w dół i pełne zablokowanie pośladków na górze."
+                        ],
+                        alt: {
+                            name: "Prostowanie nóg na maszynie",
+                            cue: "Równe, w pełni kontrolowane tempo z 1-sekundowym dopięciem. Zero obciążenia osiowego kręgosłupa.",
+                            technique: [
+                                "Ściśle przylegające biodra do oparcia maszyny.",
+                                "Przytrzymuj skurcz izolując m. czworogłowy uda."
+                            ]
+                        }
+                    },
+                    {
+                        id: "la_rdl", code: "C1", 
+                        name: "Uginanie nóg na maszynie siedząc", 
+                        sets: 3, reps: "11–12", defaultReps: 12, tempo: "2-0-2-1", rpeTarget: "8.0", pctLabel: "Izolacja Tylna", restSec: 120, 
+                        calcType: "none", valOverride: "Stos", factor: 1, step: 0,
+                        cue: "Bezpieczna praca na taśmę tylną z bardzo dobrym zapasem siłowym.",
+                        technique: [
+                            "Utrzymuj poduszkę dociskającą ciasno nad kolanami.",
+                            "Mocne, głębokie ugięcie pod siedzisko i stabilny, hamowany powrót."
+                        ],
+                        alt: {
+                            name: "Rumuński Martwy Ciąg (Barbell RDL)",
+                            cue: "Wymaga nienagannego hip-hinge i sztywności lędźwi, ale rewelacyjnie wzmacnia powięź grzbietu.",
+                            technique: [
+                                "Zatrzymanie na 1s w maksymalnym, kontrolowanym rozciągnięciu."
+                            ]
+                        }
+                    },
+                    {
+                        id: "la_core", code: "D1", 
+                        name: "AB Wheel z kolan (15 powtórzeń)", 
+                        sets: 3, reps: "15", defaultReps: 15, tempo: "2-1-1-0", rpeTarget: "8.5", pctLabel: "Antyprzeprost", restSec: 90, 
+                        calcType: "none", valOverride: "MC", factor: 1, step: 0,
+                        cue: "Klucz do bezpiecznego mostka i mocnego leg drive na ławce. Imponująca siła antyprzeprostna korpusu.",
+                        technique: [
+                            "Podwiń miednicę przed ruchem. Zatrzymaj zgięcie tułowia napinając pośladki w dolnej fazie – nie pozwól miednicy 'zapaść' się w dół.",
+                            "Wracaj spinając głównie brzuch, ograniczając zgięcie bioder."
+                        ],
+                        alt: {
+                            name: "McGill Big 3 (Wariant objętościowy)",
+                            cue: "Curl-up, Side plank, Bird dog – budowa fundamentu superstiffness osiowego.",
+                            technique: ["Wykonuj wyłącznie izometryczne spięcia, unikając jakichkolwiek ruchów zgięciowych czy skrętnych."]
+                        }
+                    }
+                ],
+                cooldown: [{ name: "Couch Stretch (60s/nogę)", timerSec: 60 }]
+            },
+
+            upperB: {
+                id: 'upperB', 
+                title: "Upper B: Pauza, Pull Neutralny i Technika", 
+                badge: "DUP: Objętość/Technika", 
+                desc: "Priorytetyzacja toru ruchu pod ciężary bez włączania SSC.", 
+                mainLiftKey: "bench", mainPct: 0.725, isMobilityDay: false,
+                warmup: [{ name: "Thread the Needle", prescription: "2x8/str" }, { name: "Pompki łopatkowe", prescription: "2x12" }],
+                exercises: [
+                    {
+                        id: "ub_pause", code: "B1", 
+                        name: "Pause Bench Press (Zatrzymanie 3s na mostku)", 
+                        sets: 4, reps: "5", defaultReps: 5, tempo: "3-3-X-0", rpeTarget: "7.5–8.0", pctLabel: "72.5% 1RM", restSec: 150, 
+                        calcType: "bench", factor: 0.725, step: 2.5,
+                        cue: "Klasyczny wariant DUP. Zatrzymanie sztangi eliminuje odruch SSC (rozciągnięcie-skurcz) i buduje 'groove' pod 100 kg.",
+                        technique: [
+                            "Twarde zatrzymanie na mostku bez rozluźniania najszerszego grzbietu.",
+                            "Utrzymaj pełne napięcie leg drive podczas pauzy.",
+                            "Eksploduj w górę pchając sztangę lekko w stronę twarzy (J-Curve)."
+                        ],
+                        alt: {
+                            name: "Wyciskanie hantli na ławce poziomej (Wariant Prewencyjny)",
+                            cue: "Zamiast wyciskania sztangi – praca hantlami chwytem pół-neutralnym chroni bark i pozwala precyzyjnie operować nadgarstkiem. Wybierz ten wariant, gdy czujesz kłucie w barku.",
+                            technique: [
+                                "Hantle ustawione lekko po skosie (kąt ok. 45°).",
+                                "Kontroluj głębokość ugięcia ramion na dole – nie schodź niżej, niż pozwala bezbolesny zakres torebki stawowej barku.",
+                                "Brak odbijania ciężaru."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ub_pull", code: "C1", 
+                        name: "Podciąganie chwytem neutralnym (MC)", 
+                        sets: 3, reps: "8-12", defaultReps: 10, tempo: "2-1-X-1", rpeTarget: "8.5", pctLabel: "Wertykalny Pull", restSec: 120, 
+                        calcType: "none", valOverride: "MC", factor: 1, step: 0,
+                        cue: "Doskonały zakres hipertroficzny. Przejście na chwyt równoległy wyeliminowało ryzyko dla stawu ramiennego.",
+                        technique: [
+                            "Aktywuj ruch ściągnięciem łopatek w dół (depresja).",
+                            "Intencja 'ściągania łokci do kieszeni'. Zapas siłowy ułatwi ewentualne dokładanie ciężaru w przyszłości."
+                        ],
+                        alt: {
+                            name: "Ściąganie wyciągu górnego (Neutralnie)",
+                            cue: "Precyzyjna kontrola ciężaru rzędu 50 kg bez zmęczenia core'a.",
+                            technique: [
+                                "Ściągaj wyciąg do klatki przy stabilnym ułożeniu nóg. Zatrzymanie na 1 sekundę poprawi rekrutację włókien."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ub_incline", code: "D1", 
+                        name: "Wyciskanie hantli OHP siedząc (kąt 75–80°)", 
+                        sets: 4, reps: "6–8", defaultReps: 7, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Oparcie pionowe", restSec: 120, 
+                        calcType: "none", valOverride: "Hantle", factor: 1, step: 0,
+                        cue: "Kąt oparcia <90° zdejmuje niebezpieczny ciężar z kręgów lędźwiowych, budując super stabilizację łopatki.",
+                        technique: [
+                            "Hantle prowadzone w płaszczyźnie łopatki (łokcie lekko w przód).",
+                            "Nie prostuj rąk z impetem, utrzymuj kontrolę na szczycie bez unoszenia barków do uszu."
+                        ],
+                        alt: {
+                            name: "Wyciskanie hantli skos dodatni (kąt 30°)",
+                            cue: "Skupienie na mostkowo-obojczykowej części m. piersiowych.",
+                            technique: [
+                                "Kąt ławki precyzyjnie dobrany na 30°."
+                            ]
+                        }
+                    },
+                    {
+                        id: "ub_cgbp", code: "E1", 
+                        name: "Uginanie przedramion młotkowe (Izolacja)", 
+                        sets: 3, reps: "10–12", defaultReps: 12, tempo: "2-0-1-1", rpeTarget: "8.0", pctLabel: "Ochrona Łokcia", restSec: 90, 
+                        calcType: "none", valOverride: "Hantle", factor: 1, step: 0,
+                        cue: "Prewencja nadgarstka (chwyt neutralny). Wzmacnia mięsień ramienno-promieniowy stabilizujący staw łokciowy dla wyciskań.",
+                        technique: [
+                            "Brak jakiegokolwiek bujania tułowiem.",
+                            "Opuszczaj hantle wolniej niż je unosisz (2-sekundowa ekscentryka)."
+                        ],
+                        alt: {
+                            name: "Close-Grip Bench Press (Wąski chwyt na triceps)",
+                            cue: "Potężna siła Lockoutu (blokady wyprostu). Chwyt na szerokość barków dla zdrowia nadgarstka.",
+                            technique: [
+                                "Nie chwytaj zbyt wąsko - idealnie na szerokość barków, by nie wyłamywać nadgarstków na boki."
+                            ]
+                        }
+                    }
+                ],
+                cooldown: [{ name: "Zwis na drążku (40s)", timerSec: 40 }]
+            },
+
+            lowerB: {
+                id: 'lowerB', 
+                title: "Lower B: Martwy Ciąg & Rozwój Hipertroficzny Łydek", 
+                badge: "Deadlift & Izometria", 
+                desc: "Siła ciągu i ekstremalny bodziec hipertroficzny połączony z chwytem.", 
+                mainLiftKey: "deadlift", mainPct: 0.825, isMobilityDay: false,
+                warmup: [{ name: "Side Plank", prescription: "2x20s" }, { name: "Monster Walk", prescription: "2x15" }],
+                exercises: [
+                    {
+                        id: "lb_dl", code: "B1", 
+                        name: "Conventional Deadlift", 
+                        sets: 3, reps: "4–5", defaultReps: 5, tempo: "2-1-X-0", rpeTarget: "8.0", pctLabel: "82.5% 1RM", restSec: 210, 
+                        calcType: "deadlift", factor: 0.825, step: 2.5,
+                        cue: "Budowa siły bazowej. Nie bój się użyć pasków (lifting straps) do martwego ciągu, aby chronić zmęczony OUN i bicepsy przed zerwaniem.",
+                        technique: [
+                            "Zdejmij luz z gryfu przed pociągnięciem ('slack pull').",
+                            "Napnij najszerszy grzbietu, pociągając w kierunku kolan, stabilizując bark."
+                        ],
+                        alt: {
+                            name: "Wspięcia na łydki stojąc z hantlami",
+                            cue: "Potężny bodziec hipertroficzny łydki z jednoczesnym budowaniem siły chwytu (izometryczny chwyt ciężkich hantli).",
+                            technique: [
+                                "Pełne rozciągnięcie mięśnia na dole (pięty w dół) i mocne 1-sekundowe wstrzymanie na szczycie.",
+                                "Powolne opuszczanie pięt poniżej poziomu podestu."
+                            ]
+                        }
+                    },
+                    {
+                        id: "lb_farm", code: "C1", 
+                        name: "Bulgarian Split Squat (Przysiad bułgarski)", 
+                        sets: 3, reps: "8–10 / nogę", defaultReps: 10, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Asymetria Dół", restSec: 90, 
+                        calcType: "squat", factor: 0.22, step: 1.0,
+                        cue: "Usuwa asymetrie napięciowe między nogami, niezbędne do stabilnego Leg Drive obunóż na ławce.",
+                        technique: [
+                            "Kąt wychylenia w przód kontroluje włączenie mięśnia pośladkowego.",
+                            "Wolne schodzenie w dół, nie obijając kolana o podłogę."
+                        ]
+                    },
+                    {
+                        id: "lb_rio", code: "D1", 
+                        name: "Protokół Izometryczny Ebonie Rio (Łokcie / 45s)", 
+                        sets: 4, reps: "45s", defaultReps: 45, tempo: "Izometria", rpeTarget: "70–80% MVC", pctLabel: "Prehab Ścięgien", restSec: 90, 
+                        calcType: "none", valOverride: "Stały Hantel", factor: 1, step: 0,
+                        cue: "Kluczowa profilaktyka ścięgien łokciowych przy wyciskaniu hantli i sztang.",
+                        technique: [
+                            "Kąt 90 stopni z hantlem w połowie ugięcia (ok. 12-14kg).",
+                            "Utrzymanie przez 45 sekund wycisza reaktywny stan zapalny ścięgna."
+                        ],
+                        alt: {
+                            name: "Rozpiętki na maszynie Pec Deck / Brama (12–15 powt.)",
+                            cue: "Wyrównanie objętości wypychania izometrycznego z naciskiem na rozciąganie bez bólu barków.",
+                            technique: ["Zachowaj umiarkowane tempo, minimalizując kąt pociągania barku w fazie ekscentrycznej."]
+                        }
+                    }
+                ],
+                cooldown: [{ name: "Hamstring stretch leżąc z taśmą (60s/nogę)", timerSec: 60 }]
+            },
+
+            saturday: {
+                id: 'saturday', 
+                title: "Sobota: Mobilność FRC & Oddech Vagus Nerve", 
+                badge: "Regeneracja Powięziowa", 
+                desc: "Redukcja tonusu układu współczulnego po cyklu PPL/DUP.", 
+                mainLiftKey: "bench", mainPct: 0, isMobilityDay: true,
+                warmup: [{ name: "Box Breathing (4-4-4-4)", prescription: "3 minuty" }],
+                exercises: [
+                    {
+                        id: "sat_cars", code: "M1", name: "CARs Barków i Bioder", sets: 3, reps: "5/str", defaultReps: 5, tempo: "Bardzo wolno", rpeTarget: "N/A", pctLabel: "Prehab FRC", restSec: 30, calcType: "none",
+                        cue: "Stymuluje mechanoreceptory, poprawiając obieg mazi stawowej w bolesnym prawym barku.", technique: ["Izolowane koła stawowe w maksymalnym powolnym zakresie."]
+                    },
+                    {
+                        id: "sat_thor", code: "M2", name: "Mobilizacja Odcinka Piersiowego na Rollerze", sets: 3, reps: "10 wyprostów", defaultReps: 10, tempo: "Pauza na dole", rpeTarget: "N/A", pctLabel: "Th Extension", restSec: 45, calcType: "none",
+                        cue: "Ustawia zdrowy mostek na ławce. Odcinek lędźwiowy pozostaje stabilny na ziemi.", technique: ["Nie zginaj lędźwi, szukaj wyprostu tylko w odcinku łopatkowym."]
+                    },
+                    {
+                        id: "sat_hang", code: "M3", name: "Zwis Pasywny dekompresyjny na Drążku", sets: 3, reps: "60s", defaultReps: 60, tempo: "Izometria", rpeTarget: "N/A", pctLabel: "Dekompresja", restSec: 60, calcType: "none",
+                        cue: "Zdejmuje kompresję z osi kręgosłupa i relaksuje m. najszerszy grzbietu.", technique: ["Chwyt z pełnym rozluźnieniem ramion."]
+                    }
+                ],
+                cooldown: [{ name: "Oddech Vagus Nerve (Wdech 4s/Pauza 2s/Wydech 8s)", timerSec: 300 }]
+            }
+        };
+
+        // --- GŁÓWNE FUNKCJE APLIKACJI ---
+
+        function initApp() {
+            updateHeaderProgress();
+            
+            // Wczytanie z LocalStorage lub domyślnie UpperA
+            const savedDay = userProfile.activeDay || 'upperA';
+            selectDay(savedDay);
+            
+            renderHistory();
+            document.getElementById('inputBench1RM').value = userProfile.bench1RM;
+            document.getElementById('inputSquat1RM').value = userProfile.squat1RM;
+            document.getElementById('inputDeadlift1RM').value = userProfile.deadlift1RM;
+        }
+
+        function updateHeaderProgress() {
+            const pct = Math.min(100, Math.round((userProfile.bench1RM / 100) * 1000) / 10);
+            document.getElementById('headerBench1RM').textContent = `${userProfile.bench1RM.toFixed(1)} kg`;
+            document.getElementById('headerProgressPct').textContent = `${pct}%`;
+            document.getElementById('headerProgressBar').style.width = `${pct}%`;
+        }
+
+        function toggleTech(id) { 
+            document.getElementById(id).classList.toggle('active'); 
+        }
+
+        function swapExercise(dayId, exIdx) {
+            const ex = programData[dayId].exercises[exIdx];
+            if(ex.alt) {
+                const tmpN = ex.name, tmpC = ex.cue, tmpT = ex.technique;
+                ex.name = ex.alt.name; ex.cue = ex.alt.cue; ex.technique = ex.alt.technique;
+                ex.alt.name = tmpN; ex.alt.cue = tmpC; ex.alt.technique = tmpT;
+                selectDay(dayId); // Przeładuj widok, aby pokazać nowe ćwiczenie
+            }
+        }
+
+        // NAPRAWIONA FUNKCJA PRZEŁĄCZANIA DNI
+        function selectDay(dayKey) {
+            // Zapisz wybór
+            userProfile.activeDay = dayKey;
+            localStorage.setItem('sciBench_profile_v5', JSON.stringify(userProfile));
+
+            // Resetuj wszystkie style zakładek
+            const allTabs = document.querySelectorAll('.day-tab');
+            allTabs.forEach(btn => {
+                btn.className = "day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-slate-900 text-slate-400 border border-slate-800 hover:text-white";
+            });
+
+            // Ustaw aktywny styl na wybranej zakładce
+            const activeTabBtn = document.getElementById(`tab-${dayKey}`);
+            if(activeTabBtn) {
+                try { activeTabBtn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch(e) {}
+                if (dayKey === 'saturday') {
+                    activeTabBtn.className = "day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-emerald-600 text-white shadow-md border border-emerald-500";
+                } else {
+                    activeTabBtn.className = "day-tab shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition bg-blue-600 text-white shadow-md shadow-blue-600/25 border border-blue-500";
+                }
+            }
+
+            // Pobierz dane dla wybranego dnia
+            const day = programData[dayKey];
+            
+            // Wypełnij nagłówki
+            document.getElementById('dayBadge').textContent = day.badge;
+            document.getElementById('dayTitle').textContent = day.title;
+            document.getElementById('dayDesc').textContent = day.desc;
+
+            // Logika ukrywania sekcji (Sobota vs Reszta Dni)
+            const targetContainer = document.getElementById('dayTargetContainer');
+            const saveSection = document.getElementById('saveSessionSection');
+            
+            if (day.isMobilityDay) {
+                targetContainer.classList.add('hidden');
+                saveSection.classList.add('hidden');
+            } else {
+                targetContainer.classList.remove('hidden');
+                saveSection.classList.remove('hidden');
+                
+                // Wylicz i pokaż ciężar roboczy dla głównego boju (np. 85% z 70kg Bench = 60kg)
+                const baseRM = userProfile[`${day.mainLiftKey}1RM`];
+                const targetWght = roundWeight(baseRM * day.mainPct, 2.5);
+                document.getElementById('dayTargetWeight').textContent = `${targetWght} kg`;
+            }
+
+            // Generuj kod HTML rozgrzewki
+            let warmupHTML = '';
+            day.warmup.forEach(w => {
+                warmupHTML += `
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/70 border border-slate-800/80 hover:border-slate-700 transition">
+                        <input type="checkbox" class="w-4 h-4 accent-amber-500 rounded cursor-pointer shrink-0">
+                        <span class="text-xs sm:text-sm font-semibold text-slate-100 flex-1">${w.name}</span>
+                        <span class="text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded shrink-0">${w.prescription}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('warmupContainer').innerHTML = warmupHTML;
+
+            // Generuj kod HTML ćwiczeń z obsługą zamienników
+            let exercisesHTML = '';
+            day.exercises.forEach((ex, idx) => {
+                // Kalkulacja ciężaru (uwzględnia override tekstowe, np "Hantle", "Stos")
+                let wVal = day.isMobilityDay ? "MC" : (ex.valOverride ? ex.valOverride : roundWeight(userProfile[`${ex.calcType}1RM`] * ex.factor, ex.step));
+                let wDisp = (wVal==="Stos"||wVal==="MC"||wVal==="Hantle"||wVal==="Stały Hantel") ? wVal : `${wVal} kg`;
+
+                // Generowanie wierszy z seriami
+                let rowsHTML = '';
+                for(let s=1; s<=ex.sets; s++) {
+                    rowsHTML += `
+                        <div class="grid grid-cols-12 gap-2 items-center py-1.5 border-b border-slate-800/60 last:border-0 text-xs">
+                            <div class="col-span-2 font-mono text-slate-400 pl-1">S ${s}</div>
+                            <div class="col-span-4 relative">
+                                <input type="text" id="${ex.id}_s${s}_w" value="${wVal}" inputmode="${typeof wVal==='number' ? 'decimal' : 'text'}" enterkeyhint="next" onfocus="this.select()" class="w-full border border-slate-700 rounded px-2 py-1 font-mono text-white text-center focus:border-blue-500 outline-none">
+                            </div>
+                            <div class="col-span-3">
+                                <input type="text" id="${ex.id}_s${s}_r" value="${ex.defaultReps}" inputmode="numeric" enterkeyhint="next" onfocus="this.select()" class="w-full border border-slate-700 rounded px-2 py-1 font-mono text-white text-center focus:border-blue-500 outline-none">
+                            </div>
+                            <div class="col-span-3 flex justify-end pr-1">
+                                <button onclick="this.classList.toggle('bg-emerald-600'); this.classList.toggle('border-emerald-500'); this.classList.toggle('text-white')" class="set-check w-8 h-8 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition">✓</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Składanie całej karty ćwiczenia
+                exercisesHTML += `
+                    <div class="glass-card rounded-xl p-4 border border-slate-800/90 shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between gap-3 mb-3 border-b border-slate-800 pb-3">
+                            <div>
+                                <h4 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                                    <span class="px-1.5 py-0.5 rounded bg-blue-600/20 text-blue-400 text-xs border border-blue-500/30">${ex.code}</span> ${ex.name}
+                                </h4>
+                                <div class="flex flex-wrap gap-2 mt-1.5 text-[11px] font-mono text-slate-300">
+                                    <span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${ex.sets} × ${ex.reps}</span>
+                                    <span class="bg-blue-950/60 border border-blue-800/50 px-1.5 py-0.5 rounded text-blue-300">${ex.pctLabel}</span>
+                                    ${!day.isMobilityDay ? `<span class="text-emerald-400 font-bold ml-1 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-900/50">Suger.: ${wDisp}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-1.5 shrink-0">
+                                ${ex.alt ? `<button onclick="swapExercise('${dayKey}', ${idx})" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition">🔄 Zamień</button>` : ''}
+                                <button onclick="toggleTech('tech_${ex.id}')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 text-xs border border-slate-700 transition">📖 Technika</button>
+                                <button onclick="startRestTimer(${ex.restSec})" class="px-2 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 text-xs border border-blue-800/50 transition">⏱️</button>
+                            </div>
+                        </div>
+                        
+                        <div id="tech_${ex.id}" class="tech-panel mb-3 p-3 rounded-lg bg-blue-950/20 border border-blue-900/30 text-xs text-slate-300">
+                            <p class="font-semibold text-blue-300 mb-1.5">💡 Wskazówka: ${ex.cue}</p>
+                            <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-400">
+                                ${ex.technique.map(t=>`<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="pt-1">${rowsHTML}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('exercisesContainer').innerHTML = exercisesHTML;
+
+            // Generuj kod HTML schłodzenia
+            let cooldownHTML = '';
+            day.cooldown.forEach((c, i) => {
+                cooldownHTML += `
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/70 border border-slate-800/80">
+                        <span class="text-xs sm:text-sm font-semibold text-slate-100 flex-1">${i+1}. ${c.name}</span>
+                        <button onclick="startRestTimer(${c.timerSec})" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-mono border border-emerald-800/50 transition">⏱️ ${c.timerSec}s</button>
+                    </div>
+                `;
+            });
+            document.getElementById('cooldownContainer').innerHTML = cooldownHTML;
+        }
+
+        // --- STOPER ---
+        let audioCtx, timerInt, timerEnd = 0;
+        const TIMER_IDLE = "w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 font-mono font-bold text-base border border-blue-500/40";
+        function fmtT(t) { return `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`; }
+        function beep() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination); o.frequency.value = 880;
+                g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
+                o.start(); o.stop(audioCtx.currentTime + 0.7);
+            } catch(e) {}
+        }
+        function tickTimer() {
+            if (!timerEnd) return;
+            const disp = document.getElementById('timerDisplay');
+            const left = Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
+            disp.textContent = fmtT(left);
+            if (left <= 0) {
+                clearInterval(timerInt); timerEnd = 0;
+                disp.className = "w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-mono font-bold text-base border border-emerald-500/50 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.3)]";
+                beep(); if (navigator.vibrate) navigator.vibrate([200,100,200]);
+            }
+        }
+        function startRestTimer(seconds) {
+            clearInterval(timerInt);
+            try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch(e) {}
+            timerEnd = Date.now() + seconds * 1000;
+            document.getElementById('timerDisplay').className = "w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 font-mono font-bold text-base border border-amber-500/40";
+            tickTimer();
+            timerInt = setInterval(tickTimer, 250);
+        }
+
+        // Ekran nie gaśnie podczas treningu (iOS 16.4+) + korekta stopera po powrocie do aplikacji
+        let wakeLock = null;
+        async function reqWake() {
+            try { if ('wakeLock' in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch(e) {}
+        }
+        document.addEventListener('click', reqWake, { once: true });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { reqWake(); tickTimer(); } });
+
+        // Ikona ekranu początkowego iPhone
+        (function() {
+            const c = document.createElement('canvas'); c.width = c.height = 180;
+            const x = c.getContext('2d'); x.fillStyle = '#080d1a'; x.fillRect(0, 0, 180, 180);
+            x.fillStyle = '#3b82f6'; x.font = '700 84px monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('100', 90, 94);
+            const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); document.head.appendChild(l);
+        })();
+
+        function stopRestTimer() {
+            clearInterval(timerInt); timerEnd = 0; 
+            const disp = document.getElementById('timerDisplay');
+            disp.textContent = "00:00"; 
+            disp.className = TIMER_IDLE; 
+        }
+
+        // --- ODDECH ---
+        let brActive = false;
+        let brTimer;
+        
+        function toggleBreathing() {
+            const btn = document.getElementById('breathBtn');
+            const circ = document.getElementById('breathCircle');
+            const txt = document.getElementById('breathText');
+            
+            if(brActive) { 
+                brActive = false; 
+                clearTimeout(brTimer); 
+                circ.style.transform = "scale(1)"; 
+                txt.textContent = "Gotowy"; 
+                btn.textContent = "▶ Start";
+                btn.className = "w-full py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition";
+                return; 
+            }
+            
+            brActive = true; 
+            btn.textContent = "⏹ Zatrzymaj";
+            btn.className = "w-full py-2 rounded-lg bg-rose-900/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/50 text-xs font-semibold transition";
+
+            function runCycle() {
+                if(!brActive) return;
+                
+                txt.textContent = "Wdech 4s"; 
+                circ.style.transition = "transform 4s ease-in-out"; 
+                circ.style.transform = "scale(1.5)";
+                
+                brTimer = setTimeout(() => { 
+                    if(!brActive) return; 
+                    txt.textContent = "Pauza 2s"; 
+                    
+                    brTimer = setTimeout(() => { 
+                        if(!brActive) return; 
+                        txt.textContent = "Wydech 8s"; 
+                        circ.style.transition = "transform 8s ease-in-out"; 
+                        circ.style.transform = "scale(0.85)"; 
+                        
+                        brTimer = setTimeout(runCycle, 8000); 
+                    }, 2000); 
+                }, 4000);
+            } 
+            
+            runCycle();
+        }
+
+        // --- ZAPIS SESJI I AUTOREGULACJA ---
+        let tonnageChartInstance = null;
+        let rmChartInstance = null;
+
+        function saveWorkoutSession() {
+            const dayKey = userProfile.activeDay;
+            const day = programData[dayKey];
+            if(day.isMobilityDay) return;
+            
+            let totalVolume = 0; 
+            let exDataSummary = [];
+            
+            day.exercises.forEach((ex) => {
+                let setsSummary = [];
+                for(let s = 1; s <= ex.sets; s++) {
+                    const weightInput = document.getElementById(`${ex.id}_s${s}_w`).value;
+                    const repsInput = document.getElementById(`${ex.id}_s${s}_r`).value;
+                    
+                    const weightNum = parseFloat(String(weightInput).replace(",", ".")); 
+                    const repsNum = parseInt(repsInput) || 0;
+                    
+                    if(!isNaN(weightNum)) {
+                        totalVolume += (weightNum * repsNum);
+                    }
+                    setsSummary.push(`${weightInput}x${repsInput}`);
+                }
+                exDataSummary.push({ name: ex.name, summary: setsSummary.join(', ') });
+            });
+
+            const jointStatus = document.getElementById('jointStatus').value;
+            let feedbackMsg = "";
+            
+            if (jointStatus === 'pain_shoulder') { 
+                userProfile.bench1RM -= 2.5;
+                feedbackMsg = "⚠️ Zgłoszono kłucie w barku/łokciu! Zmniejszono szacowane 1RM o 2.5kg dla bezpieczeństwa. Algorytm sugeruje skorzystanie z przycisku 'Zamień' na warianty z hantlami lub wyciągi (V-bar/Floor Press) podczas następnej sesji.";
+            } else if (jointStatus === 'pain_wrist') {
+                feedbackMsg = "🟠 Uważaj na nadgarstki! Skontroluj ułożenie Bulldog Grip oraz zastosuj chwyty neutralne. Ciężar bazowy utrzymany.";
+            } else {
+                // Sukces
+                userProfile[`${day.mainLiftKey}1RM`] += 2.5;
+                feedbackMsg = `🚀 Trening czysty technicznie, bez bólu! Wzrost szacowanego 1RM w boju głównym o +2.5 kg. Oby tak dalej!`;
+            }
+
+            // Zapisz zaktualizowany profil (nowe maxy)
+            localStorage.setItem('sciBench_profile_v5', JSON.stringify(userProfile));
+            
+            // Zbuduj log treningu
+            const logEntry = {
+                id: Date.now(), 
+                date: new Date().toLocaleDateString('pl-PL'), 
+                title: day.title, 
+                vol: totalVolume, 
+                estRM: userProfile.bench1RM, 
+                msg: feedbackMsg, 
+                exData: exDataSummary
+            };
+            
+            workoutLogs.push(logEntry);
+            localStorage.setItem('sciBench_logs_v5', JSON.stringify(workoutLogs));
+            
+            alert(`✅ Trening zapisany pomyślnie!\n\nTonaż wykonany: ${totalVolume} kg\n\nAnaliza systemu:\n${feedbackMsg}`); 
+            
+            // Odśwież UI
+            initApp();
+            
+            // Wyczyść notatki
+            document.getElementById('sessionNotes').value = "";
+        }
+
+        // --- HISTORIA I WYKRESY ---
+        function renderHistory() {
+            // Renderowanie listy z logami
+            const reversedLogs = [...workoutLogs].reverse();
+            const listEl = document.getElementById('historyList');
+            
+            if (reversedLogs.length === 0) {
+                listEl.innerHTML = `<div class="text-center p-6 text-slate-500 text-sm border border-dashed border-slate-700 rounded-xl">Brak zapisanych treningów. Wypełnij pierwszą sesję.</div>`;
+            } else {
+                listEl.innerHTML = reversedLogs.map(log => `
+                    <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-xs space-y-2">
+                        <div class="flex justify-between items-center font-bold text-slate-200 border-b border-slate-800 pb-2">
+                            <span>📅 ${log.date} — ${log.title}</span>
+                            <span class="text-emerald-400 bg-emerald-950/40 px-2 py-1 rounded border border-emerald-900/50">${log.vol} kg</span>
+                        </div>
+                        <div class="text-slate-400 font-mono text-[11px] space-y-1">
+                            ${log.exData.map(e => `<div><span class="text-slate-300 font-semibold">• ${e.name}:</span> ${e.summary}</div>`).join('')}
+                        </div>
+                        <div class="text-blue-300 mt-2 italic bg-blue-950/20 p-2 rounded border border-blue-900/30">💬 ${log.msg}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Czyszczenie starych instancji wykresów
+            if(tonnageChartInstance) tonnageChartInstance.destroy(); 
+            if(rmChartInstance) rmChartInstance.destroy();
+            
+            if(workoutLogs.length === 0) return;
+            
+            // Przygotowanie danych do wykresów (w kolejności chronologicznej)
+            const dates = workoutLogs.map(l => l.date); 
+            const volumes = workoutLogs.map(l => l.vol); 
+            const rmValues = workoutLogs.map(l => l.estRM);
+            
+            Chart.defaults.color = '#94a3b8'; 
+            Chart.defaults.font.family = 'Inter';
+            
+            const tonCtx = document.getElementById('tonnageChart').getContext('2d');
+            tonnageChartInstance = new Chart(tonCtx, {
+                type: 'bar', 
+                data: { 
+                    labels: dates, 
+                    datasets: [{ 
+                        label: 'Objętość (kg)', 
+                        data: volumes, 
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)', 
+                        borderColor: '#10b981', 
+                        borderWidth: 1, 
+                        borderRadius: 4 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        y: { beginAtZero: true, grid: { color: '#1e293b' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            const rmCtx = document.getElementById('rmChart').getContext('2d');
+            rmChartInstance = new Chart(rmCtx, {
+                type: 'line', 
+                data: { 
+                    labels: dates, 
+                    datasets: [{ 
+                        label: 'Est. 1RM (kg)', 
+                        data: rmValues, 
+                        borderColor: '#3b82f6', 
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)', 
+                        borderWidth: 2, 
+                        pointBackgroundColor: '#60a5fa', 
+                        pointRadius: 4, 
+                        fill: true, 
+                        tension: 0.3 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        y: { min: Math.max(0, Math.min(...rmValues) - 5), grid: { color: '#1e293b' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- NAWIGACJA ---
+        function switchView(viewName) { 
+            // Ukryj wszystko
+            ['workout', 'history', 'knowledge'].forEach(id => { 
+                document.getElementById(`view-${id}`).classList.add('hidden'); 
+                document.getElementById(`viewBtn-${id}`).className = "px-2 md:px-3 py-2 rounded-lg text-xs leading-tight text-center font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white transition"; 
+            }); 
+            
+            // Pokaż wybrane
+            document.getElementById(`view-${viewName}`).classList.remove('hidden'); 
+            document.getElementById(`viewBtn-${viewName}`).className = "px-2 md:px-3 py-2 rounded-lg text-xs leading-tight text-center font-semibold bg-slate-800 text-white border border-slate-700 shadow-md"; 
+            
+            if(viewName === 'history') {
+                renderHistory(); 
+            }
+        }
+        
+        function toggleModal(id) { 
+            document.getElementById(id).classList.toggle('hidden'); 
+        }
+        
+        // --- ZAPIS USTAWIEŃ (1RM) ---
+        function saveSettings() { 
+            const benchVal = parseFloat(document.getElementById('inputBench1RM').value);
+            const squatVal = parseFloat(document.getElementById('inputSquat1RM').value);
+            const dlVal = parseFloat(document.getElementById('inputDeadlift1RM').value);
+
+            if (!isNaN(benchVal)) userProfile.bench1RM = benchVal;
+            if (!isNaN(squatVal)) userProfile.squat1RM = squatVal;
+            if (!isNaN(dlVal)) userProfile.deadlift1RM = dlVal;
+
+            localStorage.setItem('sciBench_profile_v5', JSON.stringify(userProfile)); 
+            
+            toggleModal('settingsModal'); 
+            initApp(); 
+            alert("Ustawienia 1RM zostały zaktualizowane, a ciężary przeliczone.");
+        }
+        
+        function clearLogs() { 
+            if(confirm("Czy na pewno chcesz usunąć całą historię treningów i wykresy progresji? Tej operacji nie można cofnąć.")){ 
+                workoutLogs = []; 
+                localStorage.setItem('sciBench_logs_v5', '[]'); 
+                initApp(); 
+            } 
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
