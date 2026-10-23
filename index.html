@@ -129,7 +129,7 @@
                         <span class="text-xs font-bold text-white">Licznik Bloku Akumulacyjnego</span>
                         <span id="deloadStatusBadge" class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Akumulacja</span>
                     </div>
-                    <p id="deloadPromptText" class="text-[11px] text-slate-400">Sesje 13–16 to Tydzień Testowy AMRAP (85% 1RM) wyliczający nowe e1RM ze wzoru Epleya.</p>
+                    <p id="deloadPromptText" class="text-[11px] text-slate-400">W sesjach 1–12 ciężary wynikają ze stałego 1RM. Sesje 13–16 to Tydzień Testowy (AMRAP 85% w Upper A).</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -262,7 +262,7 @@
         <div id="view-history" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="glass-card rounded-xl p-4 border border-slate-800">
-                    <h3 class="text-sm font-bold text-slate-300 text-center mb-2">Est. 1RM Bench Press (kg)</h3>
+                    <h3 class="text-sm font-bold text-slate-300 text-center mb-2">Est. 1RM w Dzienniku Sesji (kg)</h3>
                     <div class="relative h-56"><canvas id="rmChart"></canvas></div>
                 </div>
                 <div class="glass-card rounded-xl p-4 border border-slate-800">
@@ -273,7 +273,7 @@
             <div class="glass-card rounded-xl p-5 border border-slate-800">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold text-white">📊 Zapisane Sesje</h2>
-                    <button onclick="clearLogs()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 text-rose-300 text-xs border border-rose-800/50">🗑️ Wyczyść</button>
+                    <button onclick="clearLogs()" class="px-3 py-1.5 rounded-lg bg-rose-950/60 text-rose-300 text-xs border border-rose-800/50">🗑️ Wyczyść Historię</button>
                 </div>
                 <div id="historyList" class="space-y-3"></div>
             </div>
@@ -293,11 +293,11 @@
                     </div>
                     <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
                         <h4 class="font-bold text-amber-400 text-sm">3. Prawo Irradiancji Sherringtona (Crush the Bar)</h4>
-                        <p>Maksymalne, pełne zaciśnięcie dłoni z kciukiem na gryfie (zarówno w wyciskaniu, jak i przysiadzie) wyzwala zjawisko irradiancji nerwowej, odruchowo rekrutując mięśnie stożka rotatorów oraz stabilizatory łopatki i góry grzbietu.</p>
+                        <p>Maksymalne, pełne zaciśnięcie dłoni z kciukiem na gryfie (zarówno w wyciskaniu, przysiadzie, jak i Spacerze Farmera) wyzwala zjawisko irradiancji nerwowej, odruchowo rekrutując mięśnie stożka rotatorów oraz stabilizatory łopatki i góry grzbietu.</p>
                     </div>
                     <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1.5">
-                        <h4 class="font-bold text-purple-400 text-sm">4. Transfer siły korpusu (AB Wheel & Leg Drive)</h4>
-                        <p>Wysoki poziom wytrzymałości siłowej antyprzeprostnej rdzenia (np. serie 15 powtórzeń w AB Wheel z kolan) umożliwia wygenerowanie bezwzględnej sztywności na ławce. Mocne napięcie cylindra brzusznego ułatwia prawidłowy "Leg drive", zapobiegając uginaniu się lędźwi L4-L5.</p>
+                        <h4 class="font-bold text-purple-400 text-sm">4. Transfer siły korpusu (McGill Big 3 & Leg Drive)</h4>
+                        <p>Sztywność antyprzeprostna rdzenia (Superstiffness budowana protokołem McGill Big 3 oraz kołkiem AB Wheel) umożliwia wygenerowanie bezwzględnej stabilności na ławce. Mocne napięcie cylindra brzusznego ułatwia prawidłowy "Leg drive", zapobiegając przeciążeniom lędźwi L4-L5.</p>
                     </div>
                 </div>
             </div>
@@ -430,7 +430,7 @@
         if (userProfile.sessionsSinceDeload === undefined) userProfile.sessionsSinceDeload = 0;
         if (!userProfile.accessoryHistory) userProfile.accessoryHistory = {};
 
-        // Oczyszczenie ewentualnych starych wpisów tekstowych (np. "Stos +1 sztabka") z historii akcesoriów, aby zagwarantować wyłącznie liczby
+        // Oczyszczenie ewentualnych starych wpisów tekstowych z historii akcesoriów, aby zagwarantować wyłącznie liczby
         Object.keys(userProfile.accessoryHistory).forEach(k => {
             const entry = userProfile.accessoryHistory[k];
             if (entry && typeof entry.nextWeight !== 'number' && entry.nextWeight !== undefined) {
@@ -459,7 +459,7 @@
         // Funkcja parsująca zakres powtórzeń z tekstu (np. "8–12" -> {min: 8, max: 12})
         function parseRepRange(repsStr, defaultReps) {
             if (!repsStr || typeof repsStr !== 'string') return { min: defaultReps, max: defaultReps, isRange: false };
-            if (repsStr.includes('s') || repsStr.toLowerCase().includes('izometria')) {
+            if (repsStr.includes('s') || repsStr.toLowerCase().includes('izometria') || repsStr.toLowerCase().includes('metr')) {
                 return { min: defaultReps, max: defaultReps, isRange: false };
             }
             const nums = repsStr.match(/\d+/g);
@@ -486,7 +486,7 @@
                 ],
                 exercises: [
                     {
-                        id: "ua_bench", code: "B1", isMain: true, isUpperPush: true, isSwapped: false,
+                        id: "ua_bench", code: "B1", isMain: true, isUpperPush: true, isUnilateral: false, isSwapped: false,
                         name: "Barbell Bench Press (Wyciskanie sztangi leżąc)", 
                         sets: 4, reps: "3–4", defaultReps: 4, tempo: "3-1-X-0", rpeTarget: "8–8.5", pctLabel: "85% 1RM", restSec: 240, 
                         calcType: "bench", factor: 0.85, step: 2.5,
@@ -504,32 +504,32 @@
                                 "Pełne zatrzymanie 1s na podłodze, bez odbijania łokciami o ziemię.",
                                 "Szykuje grunt pod ciężary na hantlach 22.5–24 kg."
                             ],
-                            reps: "8–10", defaultReps: 10, pctLabel: "Prehab", calcType: "none", valOverride: 20
+                            reps: "8–10", defaultReps: 10, pctLabel: "Prehab", calcType: "none", valOverride: 20, step: 2.0, isUnilateral: false
                         }
                     },
                     {
-                        id: "ua_row", code: "C1", isMain: false, isUpperPush: false, isSwapped: false,
+                        id: "ua_row", code: "C1", isMain: false, isUpperPush: false, isUnilateral: true, isSwapped: false,
                         name: "Single Arm Cable Row (Brama 1:1 lub 2:1)", 
-                        sets: 4, reps: "10–12", defaultReps: 12, tempo: "2-1-1-1", rpeTarget: "8.0", pctLabel: "Horyzontalny Pull", restSec: 105, 
+                        sets: 4, reps: "10–12 / str.", defaultReps: 12, tempo: "2-1-1-1", rpeTarget: "8.0", pctLabel: "Horyzontalny Pull", restSec: 105, 
                         calcType: "none", valOverride: 45, factor: 1, step: 2.5,
-                        cue: "Chwyt neutralny z pauzą 1s w maksymalnym spięciu. Optymalizuje Push-to-Pull ratio.",
+                        cue: "Chwyt neutralny z pauzą 1s w maksymalnym spięciu. Optymalizuje Push-to-Pull ratio. Tonaż liczony obustronnie (×2).",
                         technique: [
                             "Pociągnięcie z łokcia bez rotowania (skręcania) całego tułowia.",
                             "Maksymalna kontrola powrotu uodparnia stabilizatory łopatki.",
                             "Pamiętaj: 45–55kg (brama podwójna 2:1) lub 12.5–15kg (brama pojedyncza 1:1)."
                         ],
                         alt: {
-                            name: "Chest-Supported DB Row",
-                            cue: "Wiosłowanie w oparciu klatki jednorącz / oburącz na ławce.",
+                            name: "Chest-Supported DB Row (Wiosłowanie w oparciu)",
+                            cue: "Wiosłowanie na ławce skośnej – oparcie klatki izoluje lędźwie od przeciążeń osiowych.",
                             technique: [
                                 "Oparcie izoluje lędźwie od przeciążeń osiowych.",
                                 "Utrzymuj łokcie przy ciele, z intencją przyciągania do biodra (kieszeni)."
                             ],
-                            valOverride: 20, defaultReps: 10, reps: "8–12"
+                            valOverride: 20, defaultReps: 10, reps: "8–12", step: 2.0, isUnilateral: true
                         }
                     },
                     {
-                        id: "ua_jmpress", code: "D1", isMain: false, isUpperPush: true, isSwapped: false,
+                        id: "ua_jmpress", code: "D1", isMain: false, isUpperPush: true, isUnilateral: false, isSwapped: false,
                         name: "JM Press (Sztanga prosta/łamana)", 
                         sets: 3, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "7.5–8.0", pctLabel: "45% 1RM", restSec: 90, 
                         calcType: "bench", factor: 0.45, step: 2.5,
@@ -547,15 +547,15 @@
                                 "Pełny wyprost z zatrzymaniem (1s) na samym dole ruchu.",
                                 "Brak kompensacji barkami."
                             ],
-                            reps: "10–12", defaultReps: 12, pctLabel: "Prehab Łokcia", valOverride: 25, calcType: "none"
+                            reps: "10–12", defaultReps: 12, pctLabel: "Prehab Łokcia", valOverride: 25, calcType: "none", step: 1.5, isUnilateral: false
                         }
                     },
                     {
-                        id: "ua_facepull", code: "E1", isMain: false, isUpperPush: false, isSwapped: false,
+                        id: "ua_facepull", code: "E1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false,
                         name: "Face Pulls z liną (Wyciąg)", 
                         sets: 3, reps: "12–15", defaultReps: 15, tempo: "2-0-1-2", rpeTarget: "7.5", pctLabel: "Prehab Stożka", restSec: 60, 
-                        calcType: "none", valOverride: 20, factor: 1, step: 2.5,
-                        cue: "Fundamentalna prewencja stożka rotatorów (3 serie po 12–15 powt. zapobiegają przemęczeniu m. podgrzebieniowego).",
+                        calcType: "none", valOverride: 20, factor: 1, step: 1.0,
+                        cue: "Fundamentalna prewencja stożka rotatorów (3 serie po 12–15 powt. zapobiegają przemęczeniu m. podgrzebieniowego). Mikroprogresja +1.0 kg.",
                         technique: [
                             "Linka ciągnięta do wysokości czoła z jednoczesnym rozrywaniem końcówek na zewnątrz.",
                             "Zatrzymanie na końcu ruchu na 2 sekundy w pełnym skurczu m. podgrzebieniowego."
@@ -567,12 +567,12 @@
                                 "Kciuki lekko w górę dla bezpieczeństwa stawu barkowo-obojczykowego.",
                                 "Czysta technika bez 'bujania' ciałem (pauza na górze)."
                             ],
-                            valOverride: 8, defaultReps: 15, reps: "12–15"
+                            valOverride: 8, defaultReps: 15, reps: "12–15", step: 1.0, isUnilateral: true
                         }
                     }
                 ],
                 cooldown: [
-                    { name: "Pec stretch przy framudze 90°/120° (lekkie rozciąganie)", timerSec: 45 },
+                    { name: "Pec stretch przy framudze 90°/120° (60s/stronę)", timerSec: 60 },
                     { name: "Oddech Vagus Nerve (4-2-8s) - 3 min", timerSec: 180 }
                 ]
             },
@@ -581,15 +581,15 @@
                 id: 'lowerA', 
                 title: "Lower A: Back Squat & Siła Antyprzeprostna", 
                 badge: "Lower & Superstiffness", 
-                desc: "Siła nóg, prawo irradiancji chwytu i betonowanie core pod mostek.", 
+                desc: "Siła nóg, wzorzec Hip-Hinge i betonowanie core (McGill Superstiffness) pod mostek.", 
                 mainLiftKey: "squat", mainPct: 0.80, isMobilityDay: false,
                 warmup: [
                     { name: "90/90 Hip Flow", prescription: "6 przejść na stronę" },
-                    { name: "McGill Big 3 (Izometria)", prescription: "Piramida 5-3-1 powt." }
+                    { name: "Aktywacja pośladków z minibandem", prescription: "2 serie × 12 kroków" }
                 ],
                 exercises: [
                     {
-                        id: "la_sq", code: "B1", isMain: true, isUpperPush: false, isSwapped: false,
+                        id: "la_sq", code: "B1", isMain: true, isUpperPush: false, isUnilateral: false, isSwapped: false,
                         name: "Barbell Back Squat (Pełny Chwyt Zaciśnięty)", 
                         sets: 4, reps: "6–8", defaultReps: 6, tempo: "3-1-X-0", rpeTarget: "8.0", pctLabel: "80% 1RM", restSec: 180, 
                         calcType: "squat", factor: 0.80, step: 2.5,
@@ -606,59 +606,67 @@
                                 "Ściśle przylegające biodra do oparcia maszyny.",
                                 "Przytrzymuj skurcz izolując m. czworogłowy uda."
                             ],
-                            reps: "10–12", defaultReps: 12, pctLabel: "Izolacja Przód", calcType: "none", valOverride: 40
+                            reps: "10–12", defaultReps: 12, pctLabel: "Izolacja Przód", calcType: "none", valOverride: 40, step: 2.5, isUnilateral: false
                         }
                     },
                     {
-                        id: "la_rdl", code: "C1", isMain: false, isUpperPush: false, isSwapped: false,
-                        name: "Uginanie nóg na maszynie siedząc", 
-                        sets: 3, reps: "10–12", defaultReps: 12, tempo: "2-0-2-1", rpeTarget: "8.0", pctLabel: "Izolacja Tylna", restSec: 120, 
-                        calcType: "none", valOverride: 35, factor: 1, step: 2.5,
-                        cue: "Bezpieczna praca na taśmę tylną z bardzo dobrym zapasem siłowym.",
+                        id: "la_rdl", code: "C1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false,
+                        name: "Rumuński Martwy Ciąg (Barbell RDL)", 
+                        sets: 3, reps: "8–10", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "60% DL 1RM", restSec: 120, 
+                        calcType: "deadlift", factor: 0.60, step: 2.5, valOverride: null,
+                        cue: "Fundamentalny wzorzec Hip-Hinge. Uczy sztywności taśmy tylnej i transferu siły z podłoża (Leg Drive) bez utraty neutralności kręgosłupa.",
                         technique: [
-                            "Utrzymuj poduszkę dociskającą ciasno nad kolanami.",
-                            "Mocne, głębokie ugięcie pod siedzisko i stabilny, hamowany powrót."
+                            "Inicjuj ruch wyłącznie cofnięciem bioder w tył przy zablokowanym cylindrze brzusznym.",
+                            "Prowadź sztangę w bezpośrednim kontakcie z udami/piszczelami, aktywując m. najszerszy grzbietu.",
+                            "Zatrzymaj ruch na 1s w punkcie maksymalnego rozciągnięcia grupy kulszowo-goleniowej."
                         ],
                         alt: {
-                            name: "Rumuński Martwy Ciąg (Barbell RDL)",
-                            cue: "Wymaga nienagannego hip-hinge i sztywności lędźwi, ale rewelacyjnie wzmacnia powięź grzbietu.",
+                            name: "Uginanie nóg na maszynie siedząc",
+                            cue: "Bezpieczna, izolowana praca na taśmę tylną bez obciążenia osiowego kręgosłupa.",
                             technique: [
-                                "Zatrzymanie na 1s w maksymalnym, kontrolowanym rozciągnięciu."
+                                "Utrzymuj poduszkę dociskającą ciasno nad kolanami.",
+                                "Mocne, głębokie ugięcie pod siedzisko i stabilny, hamowany powrót."
                             ],
-                            calcType: "deadlift", factor: 0.6, valOverride: null, pctLabel: "60% DL 1RM", reps: "8–10", defaultReps: 8
+                            calcType: "none", factor: 1, valOverride: 35, step: 2.5, pctLabel: "Izolacja Tylna", reps: "10–12", defaultReps: 12, tempo: "2-0-2-1", isUnilateral: false
                         }
                     },
                     {
-                        id: "la_core", code: "D1", isMain: false, isUpperPush: false, isSwapped: false,
-                        name: "AB Wheel z kolan (12–15 powtórzeń)", 
-                        sets: 3, reps: "12–15", defaultReps: 15, tempo: "2-1-1-0", rpeTarget: "8.5", pctLabel: "Antyprzeprost", restSec: 90, 
-                        calcType: "none", valOverride: 0, factor: 1, step: 2.5,
-                        cue: "Klucz do bezpiecznego mostka i mocnego leg drive na ławce. Imponująca siła antyprzeprostna korpusu.",
+                        id: "la_core", code: "D1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false,
+                        name: "McGill Big 3 (Protokół Superstiffness)", 
+                        sets: 3, reps: "Izometria (10s)", defaultReps: 10, tempo: "Izometria", rpeTarget: "8.0", pctLabel: "Superstiffness", restSec: 90, 
+                        calcType: "none", valOverride: 0, factor: 1, step: 1.0,
+                        cue: "Protokół prof. Stuarta McGilla buduje osiową sztywność antyprzeprostną (Superstiffness), która chroni kręgi L4-L5 podczas mostkowania i generowania Leg Drive na ławce.",
                         technique: [
-                            "Podwiń miednicę przed ruchem. Zatrzymaj zgięcie tułowia napinając pośladki w dolnej fazie – nie pozwól miednicy 'zapaść' się w dół.",
-                            "Wracaj spinając głównie brzuch, ograniczając zgięcie bioder."
+                            "Curl-up, Side Bridge oraz Bird-Dog wykonywane w rygorystycznych 10-sekundowych izometriach.",
+                            "Zero ruchu zgięciowego w odcinku lędźwiowym – liczy się pełna ko-kontrakcja 360° wokół cylindra brzusznego."
                         ],
                         alt: {
-                            name: "McGill Big 3 (Wariant objętościowy)",
-                            cue: "Curl-up, Side plank, Bird dog – budowa fundamentu superstiffness osiowego.",
-                            technique: ["Wykonuj wyłącznie izometryczne spięcia, unikając jakichkolwiek ruchów zgięciowych czy skrętnych."],
-                            reps: "Izometria", defaultReps: 10, valOverride: 0
+                            name: "AB Wheel z kolan (Wariant objętościowy)",
+                            cue: "Klucz do wytrzymałości antyprzeprostnej korpusu w pełnym zakresie wyprostu ramion.",
+                            technique: [
+                                "Podwiń miednicę przed ruchem (tyłopochylenie) i napnij pośladki – nie pozwól lędźwiom zapaść się w dół.",
+                                "Wracaj spinając brzuch, ograniczając zgięcie w samych biodrach."
+                            ],
+                            reps: "12–15", defaultReps: 15, tempo: "2-1-1-0", pctLabel: "Antyprzeprost", valOverride: 0, step: 1.0, isUnilateral: false
                         }
                     }
                 ],
-                cooldown: [{ name: "Couch Stretch (60s/nogę)", timerSec: 60 }]
+                cooldown: [
+                    { name: "Couch Stretch - rozciąganie m. biodrowo-lędźwiowego (60s/nogę)", timerSec: 60 },
+                    { name: "Pozycja dziecka z oddechem w dolne żebra (60s)", timerSec: 60 }
+                ]
             },
 
             upperB: {
                 id: 'upperB', 
                 title: "Upper B: Pauza, Pull Neutralny i Lockout", 
                 badge: "DUP: Objętość/Technika", 
-                desc: "Priorytetyzacja toru ruchu bez SSC oraz wzmacnianie blokady łokci (Close-Grip).", 
+                desc: "Priorytetyzacja toru ruchu bez SSC, skos dodatni 30° oraz wzmacnianie blokady łokci (Close-Grip).", 
                 mainLiftKey: "bench", mainPct: 0.725, isMobilityDay: false,
                 warmup: [{ name: "Thread the Needle", prescription: "2x8/str" }, { name: "Pompki łopatkowe", prescription: "2x12" }],
                 exercises: [
                     {
-                        id: "ub_pause", code: "B1", isMain: true, isUpperPush: true, isSwapped: false,
+                        id: "ub_pause", code: "B1", isMain: true, isUpperPush: true, isUnilateral: false, isSwapped: false,
                         name: "Pause Bench Press (Zatrzymanie 3s na mostku)", 
                         sets: 4, reps: "5", defaultReps: 5, tempo: "3-3-X-0", rpeTarget: "7.5–8.0", pctLabel: "72.5% 1RM", restSec: 180, 
                         calcType: "bench", factor: 0.725, step: 2.5,
@@ -676,13 +684,13 @@
                                 "Kontroluj głębokość ugięcia ramion na dole – nie schodź niżej, niż pozwala bezbolesny zakres torebki stawowej barku.",
                                 "Brak odbijania ciężaru."
                             ],
-                            reps: "8–10", defaultReps: 10, pctLabel: "Prehab Barku", calcType: "none", valOverride: 20
+                            reps: "8–10", defaultReps: 10, pctLabel: "Prehab Barku", calcType: "none", valOverride: 20, step: 2.0, isUnilateral: false
                         }
                     },
                     {
-                        id: "ub_pull", code: "C1", isMain: false, isUpperPush: false, isSwapped: false,
+                        id: "ub_pull", code: "C1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false,
                         name: "Podciąganie chwytem neutralnym", 
-                        sets: 3, reps: "8–12", defaultReps: 10, tempo: "2-1-X-1", rpeTarget: "8.5", pctLabel: "Wertykalny Pull", restSec: 120, 
+                        sets: 3, reps: "8–12", defaultReps: 10, tempo: "2-1-X-1", rpeTarget: "8.5", pctLabel: "Wertykal Pull", restSec: 120, 
                         calcType: "none", valOverride: 0, factor: 1, step: 2.5,
                         cue: "Doskonały zakres hipertroficzny. Przejście na chwyt równoległy wyeliminowało ryzyko dla stawu ramiennego.",
                         technique: [
@@ -695,30 +703,33 @@
                             technique: [
                                 "Ściągaj wyciąg do klatki przy stabilnym ułożeniu nóg. Zatrzymanie na 1 sekundę poprawi rekrutację włókien."
                             ],
-                            valOverride: 50
+                            valOverride: 50, step: 2.5, isUnilateral: false
                         }
                     },
                     {
-                        id: "ub_incline", code: "D1", isMain: false, isUpperPush: true, isSwapped: false,
-                        name: "Wyciskanie hantli OHP siedząc (kąt 75–80°)", 
-                        sets: 4, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Oparcie pionowe", restSec: 120, 
-                        calcType: "none", valOverride: 15, factor: 1, step: 2.5,
-                        cue: "Kąt oparcia <90° zdejmuje niebezpieczny ciężar z kręgów lędźwiowych, budując super stabilizację łopatki.",
+                        id: "ub_incline", code: "D1", isMain: false, isUpperPush: true, isUnilateral: false, isSwapped: false,
+                        name: "Wyciskanie hantli skos dodatni (kąt 30°)", 
+                        sets: 4, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Skos 30° (Góra Klatki)", restSec: 120, 
+                        calcType: "none", valOverride: 17.5, factor: 1, step: 2.0,
+                        cue: "Niski skos (30°) maksymalizuje rekrutację części obojczykowej m. piersiowego większego oraz przedniego aktonu barku przy zachowaniu wektora zbliżonego do wyciskania leżąc.",
                         technique: [
-                            "Hantle prowadzone w płaszczyźnie łopatki (łokcie lekko w przód).",
-                            "Nie prostuj rąk z impetem, utrzymuj kontrolę na szczycie bez unoszenia barków do uszu."
+                            "Ustaw ławkę na precyzyjny kąt 30° (pierwszy lub drugi ząbek) – wyższy kąt przenosi pracę z klatki na sam bark.",
+                            "Prowadź łokcie pod kątem ok. 45–60° względem tułowia (w płaszczyźnie łopatki) z chwytem lekko zrotowanym (pół-neutralnym).",
+                            "Zatrzymaj hantle na 1s w dolnej fazie rozciągnięcia przy zachowaniu depresji i retrakcji łopatek."
                         ],
                         alt: {
-                            name: "Wyciskanie hantli skos dodatni (kąt 30°)",
-                            cue: "Skupienie na mostkowo-obojczykowej części m. piersiowych.",
+                            name: "Wyciskanie hantli OHP siedząc (kąt 75–80°)",
+                            cue: "Kąt oparcia <90° zdejmuje niebezpieczny ciężar z kręgów lędźwiowych, budując stabilizację łopatki w ruchu wertykalnym.",
                             technique: [
-                                "Kąt ławki precyzyjnie dobrany na 30°."
+                                "Hantle prowadzone w płaszczyźnie łopatki (łokcie lekko w przód).",
+                                "Nie prostuj rąk z impetem, utrzymuj kontrolę na szczycie bez unoszenia barków do uszu."
                             ],
-                            valOverride: 17.5
+                            pctLabel: "Oparcie 75–80°",
+                            valOverride: 15, step: 2.0, isUnilateral: false
                         }
                     },
                     {
-                        id: "ub_cgbp", code: "E1", isMain: false, isUpperPush: true, isSwapped: false,
+                        id: "ub_cgbp", code: "E1", isMain: false, isUpperPush: true, isUnilateral: false, isSwapped: false,
                         name: "Close-Grip Bench Press (Wąski chwyt na triceps)", 
                         sets: 3, reps: "6–8", defaultReps: 8, tempo: "3-0-1-0", rpeTarget: "8.0", pctLabel: "60% 1RM", restSec: 120, 
                         calcType: "bench", factor: 0.60, step: 2.5, valOverride: null,
@@ -734,23 +745,26 @@
                                 "Brak jakiegokolwiek bujania tułowiem.",
                                 "Opuszczaj hantle wolniej niż je unosisz (2-sekundowa ekscentryka)."
                             ],
-                            reps: "10–12", defaultReps: 12, tempo: "2-0-1-1", pctLabel: "Ochrona Łokcia", calcType: "none", valOverride: 12.5
+                            reps: "10–12", defaultReps: 12, tempo: "2-0-1-1", pctLabel: "Ochrona Łokcia", calcType: "none", valOverride: 12.5, step: 1.0, isUnilateral: true
                         }
                     }
                 ],
-                cooldown: [{ name: "Zwis na drążku (40s)", timerSec: 40 }]
+                cooldown: [
+                    { name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60 },
+                    { name: "Rozciąganie m. piersiowego i dwugłowego przy ścianie (60s/stronę)", timerSec: 60 }
+                ]
             },
 
             lowerB: {
                 id: 'lowerB', 
-                title: "Lower B: Martwy Ciąg & Prehab Ścięgien", 
+                title: "Lower B: Martwy Ciąg, Irradiancja & Prehab Ścięgien", 
                 badge: "Deadlift & Izometria", 
-                desc: "Siła ciągu (wzorzec Hip-Hinge) oraz przebudowa kolagenu ścięgien łokciowych.", 
+                desc: "Siła ciągu, stabilizacja unilateralna, prawo irradiancji chwytu (Spacer Farmera) i przebudowa kolagenu łokci.", 
                 mainLiftKey: "deadlift", mainPct: 0.825, isMobilityDay: false,
                 warmup: [{ name: "Side Plank", prescription: "2x20s" }, { name: "Monster Walk", prescription: "2x15" }],
                 exercises: [
                     {
-                        id: "lb_dl", code: "B1", isMain: true, isUpperPush: false, isSwapped: false,
+                        id: "lb_dl", code: "B1", isMain: true, isUpperPush: false, isUnilateral: false, isSwapped: false,
                         name: "Conventional Deadlift", 
                         sets: 3, reps: "4–5", defaultReps: 5, tempo: "2-1-X-0", rpeTarget: "8.0", pctLabel: "82.5% 1RM", restSec: 240, 
                         calcType: "deadlift", factor: 0.825, step: 2.5,
@@ -766,39 +780,57 @@
                                 "Pełne rozciągnięcie mięśnia na dole (pięty w dół) i mocne 1-sekundowe wstrzymanie na szczycie.",
                                 "Powolne opuszczanie pięt poniżej poziomu podestu."
                             ],
-                            reps: "15–20", defaultReps: 15, pctLabel: "Odciążenie OUN", calcType: "none", valOverride: 20
+                            reps: "15–20", defaultReps: 15, pctLabel: "Odciążenie OUN", calcType: "none", valOverride: 20, step: 2.0, isUnilateral: false
                         }
                     },
                     {
-                        id: "lb_farm", code: "C1", isMain: false, isUpperPush: false, isSwapped: false,
+                        id: "lb_bss", code: "C1", isMain: false, isUpperPush: false, isUnilateral: true, isSwapped: false,
                         name: "Bulgarian Split Squat (Przysiad bułgarski)", 
                         sets: 3, reps: "8–10 / nogę", defaultReps: 10, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Asymetria Dół", restSec: 90, 
                         calcType: "squat", factor: 0.22, step: 1.0,
-                        cue: "Usuwa asymetrie napięciowe między nogami, niezbędne do stabilnego Leg Drive obunóż na ławce.",
+                        cue: "Usuwa asymetrie napięciowe między kończynami i stabilizuje miednicę (m. pośladkowy średni), co przekłada się na symetryczny Leg Drive na ławce. Tonaż liczony dla obu nóg (×2).",
                         technique: [
-                            "Kąt wychylenia w przód kontroluje włączenie mięśnia pośladkowego.",
-                            "Wolne schodzenie w dół, nie obijając kolana o podłogę."
+                            "Kąt pochylenia tułowia w przód zwiększa zaangażowanie pośladka kosztem przeciążenia kolana.",
+                            "Kontrolowana 3-sekundowa faza ekscentryczna bez odbijania na dole."
                         ]
                     },
                     {
-                        id: "lb_rio", code: "D1", isMain: false, isUpperPush: false, isSwapped: false,
+                        id: "lb_farm", code: "D1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false, isTimeOrDistance: true,
+                        name: "Heavy Farmer's Walk (Spacer Farmera)", 
+                        sets: 4, reps: "30 metrów", defaultReps: 30, tempo: "Dynamiczny marsz", rpeTarget: "8.0–8.5", pctLabel: "Irradiancja & Core", restSec: 90, 
+                        calcType: "none", valOverride: 25, factor: 1, step: 2.5,
+                        cue: "Chwyt ciężkich hantli/trap-bara (min. 2×25–35 kg). Maksymalne miażdżenie rękojeści wyzwala prawo irradiancji Sherringtona (odruchowa ko-kontrakcja stożka rotatorów) oraz buduje antyrotacyjną sztywność cylindra brzusznego.",
+                        technique: [
+                            "Zaciśnij dłonie z pełną siłą (kciuk zamyka chwyt) i ustaw łopatki w lekkiej depresji (nie pozwalaj barkom wisieć na strukturach pasywnych).",
+                            "Stawiaj krótkie, szybkie kroki na pełnej stopie, eliminując kołysanie miednicy w płaszczyźnie czołowej.",
+                            "Oddychaj płytko 'za tarczą' napiętego brzucha (ko-kontrakcja m. poprzecznego i skośnych)."
+                        ]
+                    },
+                    {
+                        id: "lb_rio", code: "E1", isMain: false, isUpperPush: false, isUnilateral: false, isSwapped: false, isTimeOrDistance: true,
                         name: "Protokół Izometryczny Ebonie Rio (Łokcie / 45s)", 
                         sets: 5, reps: "45s", defaultReps: 45, tempo: "Izometria", rpeTarget: "70–80% MVC", pctLabel: "Prehab Ścięgien", restSec: 120, 
-                        calcType: "none", valOverride: 12.5, factor: 1, step: 2.5,
-                        cue: "Kluczowa profilaktyka ścięgien łokciowych (5 serii x 45s na 70–80% MVC) wywołująca analgezję i przebudowę kolagenu.",
+                        calcType: "none", valOverride: 12.5, factor: 1, step: 1.0,
+                        cue: "Kluczowa profilaktyka ścięgien łokciowych (5 serii x 45s na 70–80% MVC) wywołująca analgezję ośrodkową i przebudowę macierzy kolagenowej.",
                         technique: [
-                            "Kąt 90 stopni z hantlem w połowie ugięcia (ok. 12–14kg).",
-                            "Utrzymanie przez 45 sekund wycisza reaktywny stan zapalny ścięgna."
+                            "Utrzymuj kąt ok. 90° w stawie łokciowym przy 70–80% maksymalnego skurczu dowolnego (MVC).",
+                            "Izometria przez 45 sekund redukuje hamowanie korowe i wycisza reaktywne przeciążenie ścięgna."
                         ],
                         alt: {
-                            name: "Rozpiętki na maszynie Pec Deck / Brama (12–15 powt.)",
-                            cue: "Wyrównanie objętości wypychania izometrycznego z naciskiem na rozciąganie bez bólu barków.",
-                            technique: ["Zachowaj umiarkowane tempo, minimalizując kąt pociągania barku w fazie ekscentrycznej."],
-                            reps: "12–15", defaultReps: 15, tempo: "2-0-2-1", valOverride: 30
+                            name: "Izometria tricepsa na wyciągu jednorącz (Chwyt neutralny)",
+                            cue: "Wariant z linką/rączką wyciągu górnego chwytem neutralnym (młotkowym) – stałe napięcie wektora wyciągu całkowicie odciąża nadgarstek i przyczep głowy bocznej/przyśrodkowej.",
+                            technique: [
+                                "Przyklej łokieć do boku tułowia i zatrzymaj ruch wyprostu w połowie zakresu (kąt 90° w łokciu).",
+                                "Utrzymaj izometryczne napięcie przez 45 sekund na każdą rękę bez rotacji w nadgarstku."
+                            ],
+                            reps: "45s", defaultReps: 45, tempo: "Izometria", pctLabel: "Prehab Wyciąg", valOverride: 15, step: 1.0, isUnilateral: true, isTimeOrDistance: true
                         }
                     }
                 ],
-                cooldown: [{ name: "Hamstring stretch leżąc z taśmą (60s/nogę)", timerSec: 60 }]
+                cooldown: [
+                    { name: "Hamstring stretch leżąc z taśmą (60s/nogę)", timerSec: 60 },
+                    { name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60 }
+                ]
             },
 
             saturday: {
@@ -822,13 +854,16 @@
                         cue: "Zdejmuje kompresję z osi kręgosłupa i relaksuje m. najszerszy grzbietu.", technique: ["Chwyt z pełnym rozluźnieniem ramion."]
                     }
                 ],
-                cooldown: [{ name: "Oddech Vagus Nerve (Wdech 4s/Pauza 2s/Wydech 8s)", timerSec: 300 }]
+                cooldown: [
+                    { name: "Rozciąganie klatki piersiowej i powięzi piersiowo-lędźwiowej (60s/stronę)", timerSec: 60 },
+                    { name: "Oddech Vagus Nerve (Wdech 4s/Pauza 2s/Wydech 8s)", timerSec: 300 }
+                ]
             }
         };
 
         function performRawSwap(ex) {
             if (!ex.alt) return;
-            const propsToSwap = ['name', 'cue', 'technique', 'sets', 'reps', 'defaultReps', 'tempo', 'rpeTarget', 'pctLabel', 'restSec', 'calcType', 'factor', 'step', 'valOverride'];
+            const propsToSwap = ['name', 'cue', 'technique', 'sets', 'reps', 'defaultReps', 'tempo', 'rpeTarget', 'pctLabel', 'restSec', 'calcType', 'factor', 'step', 'valOverride', 'isUnilateral', 'isTimeOrDistance'];
             propsToSwap.forEach(prop => {
                 if (ex.alt[prop] !== undefined) {
                     let temp = ex[prop];
@@ -972,22 +1007,22 @@
                     statusBadge.className = "text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold";
                     promptText.textContent = "⚠️ Test AMRAP zablokowany z powodu aktywnego Trybu Rehab. Wylecz stawy przed biciem rekordów.";
                 } else {
-                    statusBadge.textContent = `🔥 TYDZIEŃ TESTOWY AMRAP (SESJA ${count + 1}/16)`;
+                    statusBadge.textContent = `🔥 TYDZIEŃ TESTOWY (SESJA ${count + 1}/16)`;
                     statusBadge.className = "text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold animate-pulse";
-                    promptText.textContent = `Trwa Tydzień Testowy (Sesje 13–16)! Bój główny w każdej z 4 sesji realizowany jest w formacie: 1 seria rozgrzewkowa + 1 seria AMRAP (85% 1RM) do wyliczenia nowego e1RM (Wzór Epleya).`;
+                    promptText.textContent = `Trwa Tydzień Testowy (Sesje 13–16)! W dniu Upper A wykonywany jest test AMRAP (85% 1RM, wzór Epleya). Sesja Upper B ma charakter techniczno-regeneracyjny (4×5 @ 70% 1RM).`;
                 }
                 toggleBtn.textContent = "📉 Włącz Tydzień Deload (-50% Serii)";
                 toggleBtn.className = "px-3 py-1.5 rounded-lg bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-300 text-xs font-semibold border border-indigo-800/60 transition";
             } else if (count >= 16) {
                 statusBadge.textContent = "WYMAGANY DELOAD!";
                 statusBadge.className = "text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold animate-pulse";
-                promptText.textContent = `Ukończono ${count} sesji (w tym Tydzień Testowy AMRAP). Włącz Deload (-50% objętości), aby zregenerować OUN i ścięgna!`;
+                promptText.textContent = `Ukończono ${count} sesji (w tym Tydzień Testowy). Włącz Deload (-50% objętości), aby zregenerować OUN i ścięgna!`;
                 toggleBtn.textContent = "📉 Włącz Planowy Deload (-50% Serii)";
                 toggleBtn.className = "px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold border border-rose-400 transition shadow-md";
             } else {
-                statusBadge.textContent = "Blok Akumulacyjny";
+                statusBadge.textContent = "Blok Akumulacyjny (Stałe 1RM)";
                 statusBadge.className = "text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700";
-                promptText.textContent = "Sesje 13–16 (po osiągnięciu 12/16) uruchomią Tydzień Testowy AMRAP (85% 1RM) i przeliczą e1RM ze wzoru Epleya.";
+                promptText.textContent = "W sesjach 1–12 ciężary robocze wynikają ze stałego 1RM. Aktualizacja e1RM nastąpi po teście AMRAP w Upper A (sesje 13–16).";
                 toggleBtn.textContent = "📉 Włącz Tydzień Deload (-50% Serii)";
                 toggleBtn.className = "px-3 py-1.5 rounded-lg bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-300 text-xs font-semibold border border-indigo-800/60 transition";
             }
@@ -1066,6 +1101,19 @@
         }
 
         function selectDay(dayKey) {
+            // --- POCZĄTEK DODANEGO ZABEZPIECZENIA ---
+            if (userProfile.activeDay && userProfile.activeDay !== dayKey) {
+                // Sprawdzamy, czy jakakolwiek seria została odznaczona na zielono (trening w toku)
+                const hasCheckedSets = document.querySelectorAll('#exercisesContainer .set-check.bg-emerald-600').length > 0;
+                if (hasCheckedSets) {
+                    const confirmSwitch = confirm("⚠️ Trening w toku! Masz odznaczone serie. Jeśli zmienisz dzień, wpisane dane przepadną. Czy na pewno chcesz przełączyć zakładkę?");
+                    if (!confirmSwitch) {
+                        return; // Przerwanie funkcji - zatrzymuje użytkownika na obecnym dniu
+                    }
+                }
+            }
+            // --- KONIEC DODANEGO ZABEZPIECZENIA ---
+
             userProfile.activeDay = dayKey;
             localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
 
@@ -1086,17 +1134,23 @@
 
             const day = programData[dayKey];
             const inTestWeekWindow = (!day.isMobilityDay && !userProfile.deloadMode && (userProfile.sessionsSinceDeload >= 12 && userProfile.sessionsSinceDeload < 16));
-            const isTestDay = inTestWeekWindow && !userProfile.rehabMode;
+            // Test AMRAP (85% 1RM) jest ograniczony wyłącznie do dnia Upper A
+            const isTestDay = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperA');
+            const isUpperBTestWeek = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperB');
             const isLowReadiness = (currentSessionReadiness.started && currentSessionReadiness.lowReadiness && !day.isMobilityDay);
             
             document.getElementById('dayBadge').textContent = isTestDay
                 ? `🔥 TYDZIEŃ TESTOWY (SESJA ${userProfile.sessionsSinceDeload + 1}/16): AMRAP 85% 1RM`
-                : (inTestWeekWindow && userProfile.rehabMode ? `⚠️ TYDZIEŃ TESTOWY ZABLOKOWANY (REHAB)` : day.badge);
+                : (isUpperBTestWeek
+                    ? `🛡️ TYDZIEŃ TESTOWY: SESJA TECHNICZNO-REGENERACYJNA (70% 1RM)`
+                    : (inTestWeekWindow && userProfile.rehabMode ? `⚠️ TYDZIEŃ TESTOWY ZABLOKOWANY (REHAB)` : day.badge));
             document.getElementById('dayTitle').textContent = day.title;
 
             const descEl = document.getElementById('dayDesc');
             if (inTestWeekWindow && userProfile.rehabMode) {
                 descEl.innerHTML = `${day.desc} <span class="block mt-1.5 font-semibold text-rose-400">⚠️ Test AMRAP zablokowany z powodu aktywnego Trybu Rehab. Wylecz stawy przed biciem rekordów.</span>`;
+            } else if (isUpperBTestWeek) {
+                descEl.innerHTML = `${day.desc} <span class="block mt-1.5 font-semibold text-emerald-400">🛡️ W tygodniu testowym Pause Bench Press realizowany jest technicznie: 4 serie × 5 powtórzeń @ 70% 1RM (bez testu AMRAP), aby chronić barki i klatkę przy 3-sekundowej pauzie.</span>`;
             } else {
                 descEl.textContent = day.desc;
             }
@@ -1115,14 +1169,22 @@
                 const isMainSubjectToRehab = (userProfile.rehabMode === true) && Boolean(mainEx && mainEx.isUpperPush === true);
                 const mainRehabMult = isMainSubjectToRehab ? 0.85 : 1.0;
                 const mainReadinessMult = isLowReadiness ? 0.95 : 1.0;
-                const effectiveMainPct = isTestDay ? 0.85 : day.mainPct;
+                const effectiveMainPct = isTestDay ? 0.85 : (isUpperBTestWeek ? 0.70 : day.mainPct);
 
-                const baseRM = userProfile[`${day.mainLiftKey}1RM`];
-                const targetWght = roundWeight(baseRM * effectiveMainPct * mainRehabMult * mainReadinessMult, 2.5);
+                let targetWght = 0;
+                if (mainEx && mainEx.valOverride !== undefined && mainEx.valOverride !== null && !isTestDay) {
+                    const baseOverride = Number(mainEx.valOverride) || 0;
+                    targetWght = roundWeight(baseOverride * mainRehabMult * mainReadinessMult, mainEx.step || 2.5);
+                } else {
+                    const baseRM = userProfile[`${day.mainLiftKey}1RM`];
+                    targetWght = roundWeight(baseRM * effectiveMainPct * mainRehabMult * mainReadinessMult, (mainEx && mainEx.step) || 2.5);
+                }
+                
                 let suffix = '';
                 if (isMainSubjectToRehab) suffix += ' (Rehab -15%)';
                 if (isLowReadiness) suffix += ' (CNS -5%)';
                 if (isTestDay) suffix += ' [AMRAP]';
+                if (isUpperBTestWeek) suffix += ' [70% Tech]';
                 document.getElementById('dayTargetWeight').textContent = `${targetWght} kg${suffix}`;
             }
 
@@ -1144,14 +1206,17 @@
                 const exRehabMult = isExSubjectToRehab ? 0.85 : 1.0;
                 const exReadinessMult = (ex.isMain && isLowReadiness) ? 0.95 : 1.0;
 
-                // Sprawdź czy dla ćwiczenia głównego mamy aktywny Tydzień Testowy AMRAP (Sesje 13-16 i brak Rehab)
+                // Sprawdź czy dla ćwiczenia głównego mamy aktywny Tydzień Testowy AMRAP (tylko Upper A w sesjach 13-16 i brak Rehab)
                 const isExAmrapTest = (ex.isMain && isTestDay);
+                const isExUpperBTechWeek = (ex.isMain && isUpperBTestWeek);
 
                 // Wylicz liczbę serii roboczych (uwzględniając Deload, Tydzień Testowy AMRAP oraz Autoregulację CNS -1 seria dla isMain)
                 let effectiveSets = ex.sets;
                 if (!day.isMobilityDay) {
                     if (isExAmrapTest) {
                         effectiveSets = 2; // S1: Rozgrzewkowa, S2: AMRAP 85% 1RM
+                    } else if (isExUpperBTechWeek) {
+                        effectiveSets = 4; // 4 serie x 5 powt. @ 70% 1RM
                     } else if (userProfile.deloadMode) {
                         effectiveSets = Math.max(1, Math.ceil(ex.sets * 0.5));
                     } else if (ex.isMain && isLowReadiness) {
@@ -1163,28 +1228,31 @@
                 const accKey = `${ex.id}_${ex.isSwapped ? 'alt' : 'base'}`;
                 const accMemory = (!ex.isMain && userProfile.accessoryHistory && userProfile.accessoryHistory[accKey]) ? userProfile.accessoryHistory[accKey] : null;
                 let doubleProgBadge = false;
-                let defaultRepsToUse = ex.defaultReps;
+                let defaultRepsToUse = isExUpperBTechWeek ? 5 : ex.defaultReps;
+                const exStepVal = ex.step || 1.0;
 
                 let wVal;
                 if (day.isMobilityDay) {
                     wVal = 0;
                 } else if (isExAmrapTest) {
                     wVal = roundWeight(userProfile[`${day.mainLiftKey}1RM`] * 0.85 * exRehabMult * exReadinessMult, 2.5);
+                } else if (isExUpperBTechWeek && (ex.valOverride === undefined || ex.valOverride === null)) {
+                    wVal = roundWeight(userProfile[`${day.mainLiftKey}1RM`] * 0.70 * exRehabMult * exReadinessMult, 2.5);
                 } else if (ex.valOverride !== undefined && ex.valOverride !== null) {
                     const baseNum = Number(ex.valOverride) || 0;
-                    wVal = isExSubjectToRehab ? roundWeight(baseNum * 0.85, ex.step || 2.5) : baseNum;
+                    wVal = isExSubjectToRehab ? roundWeight(baseNum * 0.85, exStepVal) : baseNum;
                 } else {
                     wVal = roundWeight(userProfile[`${ex.calcType}1RM`] * ex.factor * exRehabMult * exReadinessMult, ex.step || 2.5);
                 }
 
-                // Aplikacja Dynamicznej Podwójnej Progresji dla akcesoriów (wyłącznie wartości liczbowe)
+                // Aplikacja Dynamicznej Podwójnej Progresji dla akcesoriów (z zachowaniem ex.step)
                 if (!day.isMobilityDay && !ex.isMain && accMemory) {
                     if (accMemory.progressed) {
                         doubleProgBadge = true;
                         defaultRepsToUse = accMemory.nextDefaultReps || ex.defaultReps;
                     }
                     if (typeof accMemory.nextWeight === 'number' && !isNaN(accMemory.nextWeight)) {
-                        wVal = isExSubjectToRehab ? roundWeight(accMemory.nextWeight * 0.85, ex.step || 2.5) : accMemory.nextWeight;
+                        wVal = isExSubjectToRehab ? roundWeight(accMemory.nextWeight * 0.85, exStepVal) : accMemory.nextWeight;
                     }
                 }
 
@@ -1225,7 +1293,7 @@
                         <div class="grid grid-cols-12 gap-1.5 items-center py-1.5 border-b border-slate-800/60 last:border-0 text-xs ${isExAmrapTest && s === 2 ? 'bg-purple-950/20 rounded px-1' : ''}">
                             <div class="col-span-2 font-mono ${isExAmrapTest && s === 2 ? 'text-purple-300 font-bold' : 'text-slate-400'} pl-1">${setLabel}</div>
                             <div class="col-span-3 relative">
-                                <input type="number" step="0.5" id="${ex.id}_s${s}_w" value="${rowWeight}" inputmode="decimal" enterkeyhint="next" onfocus="this.select()" class="w-full border ${isExAmrapTest && s === 2 ? 'border-purple-500/60' : 'border-slate-700'} rounded px-1.5 py-1 font-mono text-white text-center focus:border-blue-500 outline-none">
+                                <input type="text" id="${ex.id}_s${s}_w" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value = this.value.replace(/[^0-9.,]/g, '').replace(',', '.')" value="${rowWeight}" enterkeyhint="next" onfocus="this.select()" class="w-full border ${isExAmrapTest && s === 2 ? 'border-purple-500/60' : 'border-slate-700'} rounded px-1.5 py-1 font-mono text-white text-center focus:border-blue-500 outline-none">
                             </div>
                             <div class="col-span-2">
                                 <input type="number" step="1" id="${ex.id}_s${s}_r" value="${rowReps}" inputmode="numeric" enterkeyhint="next" onfocus="this.select()" class="w-full border ${isExAmrapTest && s === 2 ? 'border-purple-500/60' : 'border-slate-700'} rounded px-1.5 py-1 font-mono text-white text-center focus:border-blue-500 outline-none">
@@ -1254,14 +1322,16 @@
                                 <h4 class="font-bold text-sm sm:text-base text-white flex items-center gap-2 flex-wrap">
                                     <span class="px-1.5 py-0.5 rounded bg-blue-600/20 text-blue-400 text-xs border border-blue-500/30">${ex.code}</span> ${ex.name}
                                     ${ex.isMain ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Bój Główny</span>` : ''}
+                                    ${ex.isUnilateral ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">1-Str (Tonaż ×2)</span>` : ''}
                                     ${isExAmrapTest ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 animate-pulse">🔥 TEST AMRAP (85% 1RM)</span>` : ''}
+                                    ${isExUpperBTechWeek ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">🛡️ 70% Tech (Bez AMRAP)</span>` : ''}
                                     ${ex.isMain && isLowReadiness ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">CNS Autoregulacja (-5% / -1S)</span>` : ''}
-                                    ${doubleProgBadge ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">🚀 Podwójna Progresja (+2.5kg)</span>` : ''}
+                                    ${doubleProgBadge ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">🚀 Podwójna Progresja (+${exStepVal}kg)</span>` : ''}
                                     ${isExSubjectToRehab && ex.isSwapped ? `<span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">Auto-Prehab (-15%)</span>` : ''}
                                 </h4>
                                 <div class="flex flex-wrap gap-2 mt-1.5 text-[11px] font-mono text-slate-300">
-                                    <span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${isExAmrapTest ? '1 Rozgrz. + 1 AMRAP' : `${effectiveSets} × ${ex.reps}`}${userProfile.deloadMode && !day.isMobilityDay ? ' (Deload -50%)' : ''}</span>
-                                    <span class="bg-blue-950/60 border border-blue-800/50 px-1.5 py-0.5 rounded text-blue-300">${isExAmrapTest ? '85% 1RM (Epley Test)' : ex.pctLabel}</span>
+                                    <span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${isExAmrapTest ? '1 Rozgrz. + 1 AMRAP' : `${effectiveSets} × ${isExUpperBTechWeek ? '5' : ex.reps}`}${userProfile.deloadMode && !day.isMobilityDay ? ' (Deload -50%)' : ''}</span>
+                                    <span class="bg-blue-950/60 border border-blue-800/50 px-1.5 py-0.5 rounded text-blue-300">${isExAmrapTest ? '85% 1RM (Epley Test)' : (isExUpperBTechWeek ? '70% 1RM (Technika)' : ex.pctLabel)}</span>
                                     <span class="bg-slate-800/80 border border-slate-700 px-1.5 py-0.5 rounded text-slate-400">Przerwa: ${ex.restSec}s</span>
                                     ${!day.isMobilityDay ? `<span class="text-emerald-400 font-bold ml-1 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-900/50">Suger.: ${wDisp}</span>` : ''}
                                 </div>
@@ -1428,24 +1498,49 @@
             const day = programData[dayKey];
             if(day.isMobilityDay) return;
 
+            // Utworzenie migawki (snapshot) profilu przed zmianami
+            const profileSnapshot = JSON.parse(JSON.stringify(userProfile));
+
             const inTestWeekWindow = (!day.isMobilityDay && !userProfile.deloadMode && (userProfile.sessionsSinceDeload >= 12 && userProfile.sessionsSinceDeload < 16));
-            const isTestDay = inTestWeekWindow && !userProfile.rehabMode;
+            // Test AMRAP 85% 1RM jest aktywny wyłącznie w dniu Upper A
+            const isTestDay = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperA');
+            const isUpperBTestWeek = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperB');
             const isLowReadiness = (currentSessionReadiness.started && currentSessionReadiness.lowReadiness);
             
             let totalVolume = 0; 
             let exDataSummary = [];
             let minMainRIR = Infinity;
+            let minMainWeight = Infinity;
             let failedAccessories = [];
             let progressedAccessories = [];
             let amrapWeight = 0;
             let amrapReps = 0;
+
+            // Wyliczenie docelowego obciążenia (Target Weight) dla boju głównego z uwzględnieniem mnożników sesji
+            const mainEx = day.exercises.find(e => e.isMain === true);
+            const isMainSubjectToRehab = (userProfile.rehabMode === true) && Boolean(mainEx && mainEx.isUpperPush === true);
+            const mainRehabMult = isMainSubjectToRehab ? 0.85 : 1.0;
+            const mainReadinessMult = isLowReadiness ? 0.95 : 1.0;
+            const effectiveMainPct = isTestDay ? 0.85 : (isUpperBTestWeek ? 0.70 : day.mainPct);
+
+            let targetWeight = 0;
+            if (mainEx && mainEx.valOverride !== undefined && mainEx.valOverride !== null && !isTestDay) {
+                const baseOverride = Number(mainEx.valOverride) || 0;
+                targetWeight = roundWeight(baseOverride * mainRehabMult * mainReadinessMult, mainEx.step || 2.5);
+            } else {
+                const baseMainRM = userProfile[`${day.mainLiftKey}1RM`];
+                targetWeight = roundWeight(baseMainRM * effectiveMainPct * mainRehabMult * mainReadinessMult, (mainEx && mainEx.step) || 2.5);
+            }
             
             day.exercises.forEach((ex) => {
                 let setsSummary = [];
                 const isExAmrapTest = (ex.isMain && isTestDay);
+                const isExUpperBTechWeek = (ex.isMain && isUpperBTestWeek);
                 let effectiveSets = ex.sets;
                 if (isExAmrapTest) {
                     effectiveSets = 2;
+                } else if (isExUpperBTechWeek) {
+                    effectiveSets = 4;
                 } else if (userProfile.deloadMode) {
                     effectiveSets = Math.max(1, Math.ceil(ex.sets * 0.5));
                 } else if (ex.isMain && isLowReadiness) {
@@ -1455,15 +1550,23 @@
                 let exMinRIR = Infinity;
                 let exRepsList = [];
                 let lastWeightNum = 0;
+                const unilateralMult = ex.isUnilateral ? 2 : 1;
 
                 for(let s = 1; s <= effectiveSets; s++) {
                     const wEl = document.getElementById(`${ex.id}_s${s}_w`);
                     const rEl = document.getElementById(`${ex.id}_s${s}_r`);
                     const rirEl = document.getElementById(`${ex.id}_s${s}_rir`);
+                    const btnEl = document.getElementById(`btn_${ex.id}_s${s}`); // Pobranie przycisku statusu
                     if (!wEl || !rEl) continue;
+                    if (!btnEl.classList.contains('bg-emerald-600')) {
+                        continue; 
+                    }
 
                     const weightInput = wEl.value.trim();
                     const repsInput = rEl.value.trim();
+                    if (weightInput === "" || repsInput === "" || repsInput === "0") {
+                        continue; // Pomiń niewykonaną serię, nie psuj statystyk i średniego RIR
+                    }
                     const rirVal = rirEl ? parseInt(rirEl.value) : 2;
                     
                     if (!isNaN(rirVal) && rirVal < exMinRIR) {
@@ -1473,17 +1576,27 @@
                     const weightNum = parseFloat(String(weightInput).replace(",", ".")); 
                     const repsNum = parseInt(repsInput) || 0;
                     const validWeight = !isNaN(weightNum) ? weightNum : 0;
-                    
+
+                    // Śledzenie najniższego wykonanego ciężaru w seriach roboczych boju głównego
+                    if (ex.isMain && !(isExAmrapTest && s === 1)) {
+                        if (validWeight < minMainWeight) {
+                            minMainWeight = validWeight;
+                        }
+                    }
                     exRepsList.push(repsNum);
                     lastWeightNum = validWeight;
-                    totalVolume += (validWeight * repsNum);
 
+                    // POPRAWKA TONAŻU: Nie wliczaj ćwiczeń czasowych/dystansowych do tonażu w kg!                
+                    if (!ex.isTimeOrDistance) {
+                        totalVolume += (validWeight * repsNum * unilateralMult);
+                    }
+                    
                     if (isExAmrapTest && s === 2) {
                         amrapWeight = !isNaN(weightNum) ? weightNum : roundWeight(userProfile[`${day.mainLiftKey}1RM`] * 0.85, 2.5);
-                        amrapReps = repsNum;
+                        amrapReps = Math.abs(repsNum);
                     }
 
-                    setsSummary.push(`${validWeight}kg×${repsInput} (RIR ${rirVal})`);
+                    setsSummary.push(`${validWeight}kg×${repsInput}${ex.isUnilateral ? ' (×2)' : ''} (RIR ${rirVal})`);
                 }
 
                 if (ex.isMain) {
@@ -1491,20 +1604,21 @@
                 } else {
                     if (exMinRIR === 0) failedAccessories.push(ex.name);
 
-                    // Algorytm Podwójnej Progresji dla ćwiczeń akcesoryjnych (isMain: false) — wyłącznie na wartościach liczbowych (+2.5 kg)
+                    // Algorytm Podwójnej Mikroprogresji dla ćwiczeń akcesoryjnych z respektowaniem ex.step
                     const repBounds = parseRepRange(ex.reps, ex.defaultReps);
                     const accKey = `${ex.id}_${ex.isSwapped ? 'alt' : 'base'}`;
                     if (!userProfile.accessoryHistory) userProfile.accessoryHistory = {};
 
                     const hitTopRangeAllSets = exRepsList.length > 0 && exRepsList.every(r => r >= repBounds.max);
-                    if (repBounds.isRange && hitTopRangeAllSets && exMinRIR >= 1 && !userProfile.deloadMode && !userProfile.rehabMode) {
-                        const nextW = Math.round((lastWeightNum + 2.5) * 10) / 10;
+                    if (!ex.isTimeOrDistance && repBounds.isRange && hitTopRangeAllSets && exMinRIR >= 1 && !userProfile.deloadMode && !userProfile.rehabMode) {
+                        const step = ex.step || 1.0;
+                        const nextW = Math.round((lastWeightNum + step) * 10) / 10;
                         userProfile.accessoryHistory[accKey] = {
                             progressed: true,
                             nextWeight: nextW,
                             nextDefaultReps: repBounds.min
                         };
-                        progressedAccessories.push(`${ex.name} (${nextW} kg, cel: ${repBounds.min} powt.)`);
+                        progressedAccessories.push(`${ex.name} (+${step} kg → ${nextW} kg, cel: ${repBounds.min} powt.)`);
                     } else {
                         userProfile.accessoryHistory[accKey] = {
                             progressed: false,
@@ -1518,11 +1632,17 @@
             });
 
             if (minMainRIR === Infinity) minMainRIR = 2;
+            if (minMainWeight === Infinity) minMainWeight = 0;
 
             const jointStatus = document.getElementById('jointStatus').value;
             let feedbackParts = [];
 
-            // KROK 1: Niezależna ewaluacja wyniku boju głównego (AMRAP lub standardowa sesja) i inkrementacja licznika bloku
+            // KROK 1: Ewaluacja wyniku boju głównego bez agresywnej autoinnkrementacji 1RM w bloku akumulacji
+            if (isTestDay && amrapReps <= 0) {
+                alert("⚠️ Wprowadź poprawną liczbę powtórzeń dla serii AMRAP! Zapis wstrzymany, aby zapobiec uszkodzeniu wyliczonego rekordu 1RM.");
+                return;
+            }
+
             if (userProfile.deloadMode) {
                 feedbackParts.push("📉 Sesja Deload (-50% objętości) ukończona pomyślnie. Układ nerwowy i tkanka łączna ulegają superkompensacji. 1RM pozostaje bez zmian.");
             } else {
@@ -1531,19 +1651,36 @@
                 if (userProfile.rehabMode === true) {
                     feedbackParts.push(`Tryb Rehab jest nadal aktywny: progresja bazowego 1RM pozostaje zablokowana do czasu ręcznego zgłoszenia pełnego wyleczenia. (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
                 } else if (isTestDay) {
-                    // Tydzień Testowy AMRAP (Sesje 13–16): wyłączenie sztywnego +2.5 kg i wyliczenie nowego e1RM ze wzoru Epleya
-                    const epleyRM = Math.round((amrapWeight * (1 + 0.0333 * amrapReps)) * 10) / 10;
+                    // Tydzień Testowy AMRAP (Upper A w sesjach 13–16): wyliczenie nowego e1RM ze wzoru Epleya
+                    let epleyRM;
+                    if (amrapReps === 1) {
+                        epleyRM = amrapWeight; // 1 powtórzenie to rzeczywisty 1RM
+                    } else if (amrapReps > 10) {
+                        // Kara za utratę dokładności Epleya powyżej 10 powt. (zaniżenie wyniku zapobiega przeciążeniu CNS w nowym bloku)
+                        epleyRM = Math.round((amrapWeight * (1 + 0.0333 * amrapReps)) * 0.98 * 10) / 10; 
+                    } else {
+                        epleyRM = Math.round((amrapWeight * (1 + 0.0333 * amrapReps)) * 10) / 10;
+                    }
                     const oldRM = userProfile[`${day.mainLiftKey}1RM`];
                     userProfile[`${day.mainLiftKey}1RM`] = epleyRM;
                     const diff = (epleyRM - oldRM).toFixed(1);
                     const sign = epleyRM >= oldRM ? '+' : '';
                     const deloadNote = userProfile.sessionsSinceDeload >= 16 ? " Blok 16 sesji zakończony — zalecane włączenie Tygodnia Deload!" : "";
                     feedbackParts.push(`🏆 TEST AMRAP UKOŃCZONY (Sesja ${userProfile.sessionsSinceDeload}/16)! Wynik serii AMRAP: ${amrapWeight} kg × ${amrapReps} powt. Nowy szacowany 1RM (${day.mainLiftKey.toUpperCase()}) ze wzoru Epleya wynosi ${epleyRM.toFixed(1)} kg (${sign}${diff} kg względem poprzedniego ${oldRM.toFixed(1)} kg).${deloadNote}`);
-                } else if (minMainRIR >= 1) {
-                    userProfile[`${day.mainLiftKey}1RM`] += 2.5;
-                    feedbackParts.push(`🚀 Optymalna rezerwa w boju głównym (min. RIR ${minMainRIR})! Wzrost szacowanego 1RM o +2.5 kg (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
+                } else if (isUpperBTestWeek) {
+                    const deloadNote = userProfile.sessionsSinceDeload >= 16 ? " Blok 16 sesji zakończony — zalecane włączenie Tygodnia Deload!" : "";
+                    feedbackParts.push(`🛡️ Sesja techniczno-regeneracyjna Upper B (4×5 @ 70% 1RM, min. RIR ${minMainRIR}) w tygodniu testowym ukończona pomyślnie (Sesja ${userProfile.sessionsSinceDeload}/16). Bazowy 1RM pozostaje stały.${deloadNote}`);
+                } else if (minMainRIR >= 1 && minMainWeight >= targetWeight) {
+                    if (day.mainLiftKey === 'bench') {
+                        feedbackParts.push(`✅ Zrealizowano zaplanowane obciążenie w bloku akumulacji (min. RIR ${minMainRIR}, ciężar ≥ ${targetWeight} kg). Bazowy 1RM pozostaje stały w trakcie mezocyklu — aktualizacja e1RM nastąpi po teście AMRAP w Tygodniu Testowym (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
+                    } else {
+                        userProfile[`${day.mainLiftKey}1RM`] += 2.5;
+                        feedbackParts.push(`🚀 Optymalna rezerwa w boju głównym (min. RIR ${minMainRIR}, ciężar ≥ ${targetWeight} kg). Wzrost szacowanego 1RM (${day.mainLiftKey.toUpperCase()}) o +2.5 kg na kolejną sesję!`);
+                    }
+                } else if (minMainRIR >= 1 && minMainWeight < targetWeight) {
+                    feedbackParts.push(`ℹ️ Utrzymano odpowiedni zapas siłowy (min. RIR ${minMainRIR}), ale wykonano trening na mniejszym ciężarze niż zalecany (${minMainWeight} kg vs zalecane ${targetWeight} kg). 1RM pozostaje bez zmian (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
                 } else {
-                    feedbackParts.push(`🛑 Osiągnięto załamanie (RIR 0) w boju głównym. Aby uniknąć przeciążenia OUN i tendinopatii, szacowany 1RM zostaje zablokowany na kolejną sesję (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
+                    feedbackParts.push(`🛑 Osiągnięto załamanie (RIR 0) w boju głównym. Aby uniknąć przeciążenia OUN i tendinopatii, w kolejnej sesji zadbaj o lepszą regenerację i utrzymaj RIR 1–2. 1RM pozostaje bez zmian (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
                 }
 
                 if (failedAccessories.length > 0) {
@@ -1552,34 +1689,48 @@
             }
 
             if (progressedAccessories.length > 0) {
-                feedbackParts.push(`📈 Podwójna progresja akcesoriów (+2.5 kg na kolejny trening): ${progressedAccessories.join('; ')}.`);
+                feedbackParts.push(`📈 Podwójna mikroprogresja akcesoriów na kolejny trening: ${progressedAccessories.join('; ')}.`);
             }
 
-            // KROK 2: Osobny, niezależny warunek sprawdzający status bólowy stawów (nie nadpisuje wyniku AMRAP ani progresji z bieżącej sesji)
+            // KROK 2: Osobny, niezależny warunek sprawdzający status bólowy stawów
             if (jointStatus === 'pain_shoulder' || jointStatus === 'pain_wrist') {
                 userProfile.rehabMode = true;
                 syncRehabSwaps();
                 feedbackParts.push("🚨 Zgłoszono ból stawów/ścięgien! Zastosuj Protokół Izometryczny (5 serii x 45 sekund na 70-80% MVC) po treningu w celu wywołania analgezji i przebudowy kolagenu. Aktywowano Tryb Rehab na KOLEJNE sesje (-15% obciążenia oraz automatyczna zamiana dla ćwiczeń Upper Push).");
             }
-
+            
+            const rawNotes = document.getElementById('sessionNotes').value.trim();
+            if (rawNotes) {
+                feedbackParts.push(`📝 Notatki: ${rawNotes}`);
+            }
+            // Jeśli w formularzu wybrano "ok", wyłącz rehab automatycznie:
+            if (jointStatus === 'ok' && userProfile.rehabMode) {
+                userProfile.rehabMode = false;
+                syncRehabSwaps(); // Przywrócenie głównych ćwiczeń pchających
+                feedbackParts.push("🟢 Użytkownik zgłosił powrót do zdrowia. Tryb Rehab został wyłączony, główne boje zostały przywrócone.");
+            }
             const feedbackMsg = feedbackParts.join(' ');
 
             localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
             
+            const currentLiftRM = userProfile[`${day.mainLiftKey}1RM`] || userProfile.bench1RM;
             const logEntry = {
                 id: Date.now(), 
                 date: new Date().toLocaleDateString('pl-PL'), 
-                title: day.title + (isTestDay ? " [TEST AMRAP]" : ""), 
+                title: day.title + (isTestDay ? " [TEST AMRAP]" : (isUpperBTestWeek ? " [70% TECH]" : "")), 
                 vol: Math.round(totalVolume * 10) / 10, 
-                estRM: userProfile.bench1RM, 
+                liftKey: day.mainLiftKey,
+                estRM: currentLiftRM,
+                benchRM: userProfile.bench1RM,
                 msg: feedbackMsg, 
-                exData: exDataSummary
+                exData: exDataSummary,
+                snapshot: profileSnapshot
             };
             
             workoutLogs.push(logEntry);
             localStorage.setItem('sciBench_logs_v8', JSON.stringify(workoutLogs));
             
-            alert(`✅ Trening zapisany pomyślnie!\n\nTonaż wykonany: ${logEntry.vol} kg\n\nAnaliza systemu:\n${feedbackMsg}`); 
+            alert(`✅ Trening zapisany pomyślnie!\n\nTonaż wykonany: ${logEntry.vol} kg\nEst. 1RM (${(day.mainLiftKey || 'bench').toUpperCase()}): ${currentLiftRM.toFixed(1)} kg\n\nAnaliza systemu:\n${feedbackMsg}`); 
             
             // Po zapisie sesji zresetuj bramkę gotowości na kolejny trening
             currentSessionReadiness.started = false;
@@ -1587,28 +1738,45 @@
 
             initApp();
             
+            // Opróżnianie całego formularza po zapisu:
             document.getElementById('sessionNotes').value = "";
+            document.getElementById('jointStatus').value = "ok";
+            document.getElementById('techQuality').value = "Pełna kontrola";
+            document.getElementById('sleepQuality').value = "Wysoka";
         }
 
         function renderHistory() {
             const reversedLogs = [...workoutLogs].reverse();
             const listEl = document.getElementById('historyList');
+            const liftLabels = { bench: 'BENCH', squat: 'SQUAT', deadlift: 'DEADLIFT' };
             
             if (reversedLogs.length === 0) {
                 listEl.innerHTML = `<div class="text-center p-6 text-slate-500 text-sm border border-dashed border-slate-700 rounded-xl">Brak zapisanych treningów. Wypełnij pierwszą sesję.</div>`;
             } else {
-                listEl.innerHTML = reversedLogs.map(log => `
-                    <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-xs space-y-2">
-                        <div class="flex justify-between items-center font-bold text-slate-200 border-b border-slate-800 pb-2">
+                listEl.innerHTML = reversedLogs.map(log => {
+                    const lKey = log.liftKey || 'bench';
+                    const lName = liftLabels[lKey] || lKey.toUpperCase();
+                    const rmShown = typeof log.estRM === 'number' ? log.estRM.toFixed(1) : userProfile.bench1RM.toFixed(1);
+                    return `
+                    <div class="p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-xs space-y-2 relative group">
+                        <div class="flex flex-wrap justify-between items-center gap-2 font-bold text-slate-200 border-b border-slate-800 pb-2">
                             <span>📅 ${log.date} — ${log.title}</span>
-                            <span class="text-emerald-400 bg-emerald-950/40 px-2 py-1 rounded border border-emerald-900/50">${log.vol} kg</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-blue-300 bg-blue-950/50 px-2 py-1 rounded border border-blue-800/50 font-mono text-[11px]">1RM ${lName}: ${rmShown} kg</span>
+                                <span class="text-emerald-400 bg-emerald-950/40 px-2 py-1 rounded border border-emerald-900/50 font-mono text-[11px]">Tonaż: ${log.vol} kg</span>
+                            </div>
                         </div>
                         <div class="text-slate-400 font-mono text-[11px] space-y-1">
                             ${log.exData.map(e => `<div><span class="text-slate-300 font-semibold">• ${e.name}:</span> ${e.summary}</div>`).join('')}
                         </div>
                         <div class="text-blue-300 mt-2 italic bg-blue-950/20 p-2 rounded border border-blue-900/30">💬 ${log.msg}</div>
+                        
+                        <div class="mt-3 flex items-center justify-end gap-2 border-t border-slate-800 pt-2">
+                            <button onclick="exportWorkoutForCoach(${log.id})" class="px-2.5 py-1 rounded bg-blue-950/70 hover:bg-blue-900 text-blue-300 text-xs border border-blue-800/50 transition flex items-center gap-1">📋 Kopiuj dla Trenera</button>
+                            <button onclick="deleteWorkoutLog(${log.id})" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs border border-rose-800/50 transition">🗑️ Usuń</button>
+                        </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
 
             if(tonnageChartInstance) tonnageChartInstance.destroy(); 
@@ -1616,7 +1784,7 @@
             
             if(workoutLogs.length === 0) return;
             
-            const dates = workoutLogs.map(l => l.date); 
+            const dates = workoutLogs.map(l => `${l.date} (${(l.liftKey || 'bench').toUpperCase()})`); 
             const volumes = workoutLogs.map(l => l.vol); 
             const rmValues = workoutLogs.map(l => l.estRM);
             
@@ -1654,7 +1822,7 @@
                 data: { 
                     labels: dates, 
                     datasets: [{ 
-                        label: 'Est. 1RM (kg)', 
+                        label: 'Est. 1RM danego boju (kg)', 
                         data: rmValues, 
                         borderColor: '#3b82f6', 
                         backgroundColor: 'rgba(59, 130, 246, 0.1)', 
@@ -1675,6 +1843,84 @@
                     plugins: { legend: { display: false } }
                 }
             });
+        }
+        
+        function deleteWorkoutLog(logId) {
+            const logIndex = workoutLogs.findIndex(log => log.id === logId);
+            if (logIndex === -1) return;
+
+            const isNewest = logIndex === workoutLogs.length - 1;
+            const logToDelete = workoutLogs[logIndex];
+
+            if (isNewest) {
+                if (confirm("Czy na pewno chcesz usunąć ten trening? Zmiany w Twoim 1RM, liczniku bloku i progresji akcesoriów zostaną cofnięte.")) {
+                    if (logToDelete.snapshot) {
+                        userProfile = logToDelete.snapshot;
+                        localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
+                    }
+                    workoutLogs.splice(logIndex, 1);
+                    localStorage.setItem('sciBench_logs_v8', JSON.stringify(workoutLogs));
+                    initApp();
+                    switchView('history'); // <--- Zatrzymuje użytkownika w zakładce historii
+                }
+            } else {
+                if (confirm("Usuwasz starszy trening. Zniknie on z historii, ale Twój obecny 1RM i licznik bloku nie zostaną zmienione. Kontynuować?")) {
+                    workoutLogs.splice(logIndex, 1);
+                    localStorage.setItem('sciBench_logs_v8', JSON.stringify(workoutLogs));
+                    initApp();
+                    switchView('history'); // <--- Zatrzymuje użytkownika w zakładce historii
+                }
+            }
+        }
+        
+        function exportWorkoutForCoach(logId) {
+            const log = workoutLogs.find(l => l.id === logId);
+            if (!log) return;
+            
+            const liftLabels = { bench: 'BENCH', squat: 'SQUAT', deadlift: 'DEADLIFT' };
+            const lKey = log.liftKey || 'bench';
+            const lName = liftLabels[lKey] || lKey.toUpperCase();
+            const rmShown = typeof log.estRM === 'number' ? log.estRM.toFixed(1) : userProfile.bench1RM.toFixed(1);
+            
+            const exDataText = log.exData.map(e => `• ${e.name}: ${e.summary}`).join('\n');
+            
+            const report = `========================================
+🏋️ RAPORT TRENINGOWY — ROAD TO 100 KG
+========================================
+📅 Data: ${log.date}
+🎯 Jednostka: ${log.title}
+📊 Tonaż całkowity: ${log.vol} kg
+📈 Szacowany 1RM (${lName}): ${rmShown} kg
+
+PRZEBIEG SESJI:
+${exDataText}
+
+ANALIZA ADAPTACJI I AUTOREGULACJA:
+💬 Status / Feedback: ${log.msg}
+========================================`;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(report).then(() => {
+                    alert("✅ Raport treningowy został skopiowany do schowka! Możesz go wkleić trenerowi w wiadomości.");
+                }).catch(err => {
+                    downloadTxtFile(report, `Raport_Treningowy_${log.date.replace(/\./g, '-')}.txt`);
+                });
+            } else {
+                downloadTxtFile(report, `Raport_Treningowy_${log.date.replace(/\./g, '-')}.txt`);
+            }
+        }
+        
+        function downloadTxtFile(text, filename) {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert("✅ Raport został pobrany jako plik tekstowy, ponieważ schowek jest niedostępny.");
         }
 
         function switchView(viewName) { 
@@ -1775,11 +2021,28 @@
         }
         
         function clearLogs() { 
-            if(confirm("Czy na pewno chcesz usunąć całą historię treningów i wykresy progresji? Tej operacji nie można cofnąć.")){ 
-                workoutLogs = []; 
-                localStorage.setItem('sciBench_logs_v8', '[]'); 
-                initApp(); 
-            } 
+            if (!confirm("Czy na pewno chcesz usunąć historię wszystkich odbytych treningów?")) return;
+            
+            const resetProfile = confirm("Czy chcesz również zresetować szacowane 1RM do wartości początkowych (Bench: 70 kg, Squat: 60 kg, Deadlift: 85 kg) oraz wyzerować licznik bloku?");
+            
+            workoutLogs = []; 
+            localStorage.setItem('sciBench_logs_v8', '[]'); 
+            
+            if (resetProfile) {
+                userProfile.bench1RM = 70.0;
+                userProfile.squat1RM = 60.0;
+                userProfile.deadlift1RM = 85.0;
+                userProfile.sessionsSinceDeload = 0;
+                userProfile.rehabMode = false;
+                userProfile.deloadMode = false;
+                userProfile.accessoryHistory = {};
+                localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
+                alert("Historia wpisów oraz profil 1RM zostały zresetowane do ustawień początkowych.");
+            } else {
+                alert("Historia wpisów została usunięta, ale wypracowany profil 1RM pozostał zachowany.");
+            }
+            
+            initApp(); 
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
