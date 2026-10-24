@@ -433,10 +433,12 @@
             sessionsSinceDeload: 0,
             accessoryHistory: {}
         };
+        if (userProfile.amrapDoneInBlock === undefined) userProfile.amrapDoneInBlock = false;
         if (userProfile.rehabMode === undefined) userProfile.rehabMode = false;
         if (userProfile.deloadMode === undefined) userProfile.deloadMode = false;
         if (userProfile.sessionsSinceDeload === undefined) userProfile.sessionsSinceDeload = 0;
         if (!userProfile.accessoryHistory) userProfile.accessoryHistory = {};
+        if (!userProfile.swaps) userProfile.swaps = {};
 
         // Oczyszczenie ewentualnych starych wpisów tekstowych z historii akcesoriów, aby zagwarantować wyłącznie liczby
         Object.keys(userProfile.accessoryHistory).forEach(k => {
@@ -488,9 +490,36 @@
                 desc: "Rekrutacja wysokoprogowych jednostek przy kątach łokci ok. 45°.", 
                 mainLiftKey: "bench", mainPct: 0.85, isMobilityDay: false,
                 warmup: [
-                    { name: "CARs Barków w płaszczyźnie łopatki", prescription: "2 serie × 5 rotacji" },
-                    { name: "Mobilizacja Th na rollerze (wyprost z klatki)", prescription: "2 serie × 8 wyprostów" },
-                    { name: "Band Pull-Apart (aktywacja m. podgrzebieniowego)", prescription: "2 serie × 15 powtórzeń" }
+                    { 
+                        name: "CARs Barków w płaszczyźnie łopatki", prescription: "2 serie × 5 rotacji",
+                        cue: "Ruch zachodzi wyłącznie w stawie ramiennym, klatka piersiowa nie rotuje się za ręką.",
+                        technique: [
+                            "Setup: Stoisz prosto, drugą ręką trzymasz się ściany lub słupka, napinając pośladki i brzuch (irradiancja – blokujesz tułów). Ramiona wzdłuż ciała.",
+                            "Faza koncentryczna (Zgięcie i rotacja wewnętrzna): Unosisz wyprostowaną rękę powoli przed siebie, ale pod kątem około 30° od osi ciała na zewnątrz (płaszczyzna łopatki, najbezpieczniejsza dla torebki stawowej prawego barku). Gdy dłoń minie wysokość głowy i osiągniesz barierę ruchu, zaczynasz obracać całe ramię do wewnątrz (kciuk kieruje się w dół) i przenosisz rękę jak najdalej za siebie.",
+                            "Pauza: W maksymalnym punkcie z tyłu zatrzymujesz ruch na sekundę.",
+                            "Faza ekscentryczna (Wyprost i rotacja zewnętrzna): Odwracasz sekwencję. Prowadzisz rękę z tyłu do góry, powoli odkręcając ją na zewnątrz (kciuk wraca do góry), aż ramię przejdzie nad głową i wróci w dół przed Tobą."
+                        ]
+                    },
+                    { 
+                        name: "Mobilizacja Th na rollerze (wyprost z klatki)", prescription: "2 serie × 8 wyprostów",
+                        cue: "Miednica i żebra muszą pozostać zablokowane – ruch ma zachodzić wyłącznie w klatce piersiowej, bez pogłębiania lordozy w lędźwiach.",
+                        technique: [
+                            "Setup: Kładziesz się na plecach, roller piankowy umieszczasz poprzecznie pod środkowym odcinkiem kręgosłupa piersiowego (segmenty Th4–Th8, linia łopatek). Pośladki leżą płasko na ziemi, dłonie splatasz za karkiem, a łokcie zbliżasz do siebie, aby odsłonić kręgi i odciągnąć łopatki.",
+                            "Faza ekscentryczna (Wyprost): Bierzesz wdech i powoli odchylasz głowę oraz górną część pleców za roller w stronę podłogi.",
+                            "Pauza: Zatrzymujesz się w skrajnym, bezbolesnym wyproście na 2 sekundy.",
+                            "Faza koncentryczna: Z wydechem wracasz do pozycji wyjściowej, używając napięcia mięśni brzucha. Przesuwasz roller o jeden kręg wyżej/niżej i powtarzasz."
+                        ]
+                    },
+                    { 
+                        name: "Band Pull-Apart (aktywacja m. podgrzebieniowego)", prescription: "2 serie × 15 powtórzeń",
+                        cue: "Skupiasz się na napięciu tylnego aktonu barku i mięśni między łopatkami, klatka piersiowa jest wypchnięta.",
+                        technique: [
+                            "Setup: Stoisz ze spiętym brzuchem. Chwytasz lekką gumę oporową oburącz na szerokość barków. Stosujesz chwyt w supinacji (wnętrza dłoni skierowane w górę) – wymusza to rotację zewnętrzną kości ramiennej i prewencyjnie odciąża staw.",
+                            "Faza koncentryczna: Prowadzisz niemal proste ręce na boki, rozciągając gumę i ściągając łopatki (retrakcja i depresja). Guma wędruje poziomo do dolnej części mostka.",
+                            "Pauza: Zatrzymujesz maksymalne spięcie przez 2 sekundy.",
+                            "Faza ekscentryczna: Przez 2 sekundy kontrolowanie pozwalasz gumie wrócić do pozycji wyjściowej, jednak nie tracisz całkowicie napięcia i nie pozwalasz barkom zapaść się w przód (protrakcja)."
+                        ]
+                    }
                 ],
                 exercises: [
                     {
@@ -498,11 +527,12 @@
                         name: "Barbell Bench Press (Wyciskanie sztangi leżąc)", 
                         sets: 4, reps: "3–4", defaultReps: 4, tempo: "3-1-X-0", rpeTarget: "8–8.5", pctLabel: "85% 1RM", restSec: 240, 
                         calcType: "bench", factor: 0.85, step: 2.5,
-                        cue: "Prowadź sztangę po trajektorii J-Curve (odpychanie z klatki od razu po skosie w tył, w stronę stojaków pod kątem 30–45°) oraz zastosuj chwyt Bulldog Grip dokładnie nad kośćmi przedramienia.",
+                        cue: "Wypchnij sztangę po trajektorii „J-curve” (od razu po skosie w tył ku stojakom pod kątem 30-45°) oraz zastosuj chwyt Bulldog Grip dokładnie nad kośćmi przedramienia.",
                         technique: [
-                            "Kąt łokci 45–70° w fazie ekscentrycznej (chroni torebkę stawową i stożek rotatorów).",
-                            "Bulldog Grip ustawia gryf w osi kości promieniowej i łokciowej, eliminując przeprost nadgarstka.",
-                            "Natychmiast po odbiciu z mostka kieruj sztangę po skosie w tył (30–45° ku stojakom) i utrzymaj poziomy Leg Drive."
+                            "Setup (Pozycja wyjściowa): Oprzyj ciężar na górnej części grzbietu. Zastosuj pełną retrakcję (ściągnięcie) i depresję (obniżenie) łopatek, co obraca panewkę stawu ku tyłowi i zapobiega przedniemu ślizgowi głowy kości ramiennej. Zastosuj chwyt „bulldog grip” (sztanga w dolnym rowku dłoni), ustawiając gryf dokładnie w osi kości promieniowej i łokciowej. Wygeneruj mostek poprzez wyprost w odcinku piersiowym.",
+                            "Faza ekscentryczna: Opuszczaj sztangę w stronę dolnej części mostka, prowadząc łokcie pod kątem 45–70° względem tułowia. Eliminacja szerszego prowadzenia łokci („flaringu”) chroni ścięgno mięśnia nadgrzebieniowego i kaletkę podbarkową przed kompresją.",
+                            "Pauza: Zatrzymaj gryf na klatce, utrzymując pełne napięcie izometryczne pleców. Zapobiega to odbijaniu sztangi (chest bounce), chroniąc mostek i żebra.",
+                            "Faza koncentryczna: Zainicjuj ruch silnym leg drive – pchnij stopy w podłoże, kierując wektor siły poziomo w stronę głowy. Wypchnij sztangę po trajektorii „J-curve” (od razu w tył ku stojakom pod kątem 30–45°), co gwałtownie skraca ramię momentu siły dla stawu ramiennego przed wejściem w strefę deceleracji."
                         ],
                         alt: {
                             name: "Dumbbell Floor Press (Wariant Prewencyjny)",
@@ -520,11 +550,12 @@
                         name: "Single Arm Cable Row (Brama 1:1 lub 2:1)", 
                         sets: 4, reps: "10–12 / str.", defaultReps: 12, tempo: "2-1-1-1", rpeTarget: "8.0", pctLabel: "Horyzontalny Pull", restSec: 105, 
                         calcType: "none", valOverride: 45, factor: 1, step: 2.5,
-                        cue: "Chwyt neutralny z pauzą 1s w maksymalnym spięciu. Optymalizuje Push-to-Pull ratio. Tonaż liczony obustronnie (×2).",
+                        cue: "Przewaga pracy przyciągającej nad wyciskaniem w stosunku od 1,5:1 do 2:1 buduje kluczową dla zdrowia barku równowagę strukturalną.",
                         technique: [
-                            "Pociągnięcie z łokcia bez rotowania (skręcania) całego tułowia.",
-                            "Maksymalna kontrola powrotu uodparnia stabilizatory łopatki.",
-                            "Pamiętaj: 45–55kg (brama podwójna 2:1) lub 12.5–15kg (brama pojedyncza 1:1)."
+                            "Setup (Pozycja wyjściowa): Stoisz w wykroku lub klęczysz twarzą do wyciągu, co chroni lędźwie przed kompresją. Łapiesz rączkę wyciągu chwytem neutralnym (wnętrze dłoni do wewnątrz). Utrzymujesz napięty cylinder brzuszny, klatka piersiowa jest wypchnięta i nie rotuje się w stronę wyciągu.",
+                            "Faza koncentryczna (Przyciąganie): Inicjujesz ruch od aktywacji łopatki – ściągasz ją w dół (depresja) i do środka kręgosłupa (retrakcja). Następnie prowadzisz łokieć wąsko, z intencją wciągnięcia go „do kieszeni na biodrze”.",
+                            "Pauza: Zatrzymujesz ruch na 1 sekundę w punkcie maksymalnego skurczu mięśnia najszerszego grzbietu.",
+                            "Faza ekscentryczna (Opuszczanie): Przez 2-3 sekundy powoli prostujesz ramię, pozwalając ciężarowi na wysunięcie łopatki w przód (protrakcja), jednak bez luzowania tułowia i puszczania barku luźno w górę."
                         ],
                         alt: {
                             name: "Chest-Supported DB Row (Wiosłowanie w oparciu)",
@@ -541,11 +572,12 @@
                         name: "JM Press (Sztanga prosta/łamana)", 
                         sets: 3, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "7.5–8.0", pctLabel: "45% 1RM", restSec: 90, 
                         calcType: "bench", factor: 0.45, step: 2.5,
-                        cue: "Ruch stanowiący złoty środek między wyciskaniem a francuzem. Buduje potężną siłę wyprostu na punkt krytyczny (sticking point).",
+                        cue: "Ruch stanowiący złoty środek między wyciskaniem a francuzem. Klatka piersiowa i przednie aktony barków pozostają wyizolowane z ruchu.",
                         technique: [
-                            "Opuszczanie sztangi w kierunku obojczyka/szyi.",
-                            "Przedramię spotyka się z bicepsem 2 cm nad klatką.",
-                            "Łokcie pod kątem ok. 45 stopni w stosunku do tułowia."
+                            "Setup: Chwyć sztangę na szerokość barków lub węziej (35–45 cm), co chroni staw ramienno-obojczykowy i kieruje naprężenia na aparat wyprostny łokcia. Utrzymaj nadgarstki prosto.",
+                            "Faza ekscentryczna: Opuszczaj gryf w linii prostej w kierunku szyi/obojczyków. Łokcie prowadź blisko tułowia (kąt ok. 45°), przesuwając je lekko w dół w stronę bioder, aż do fizycznego spotkania przedramienia z bicepsem.",
+                            "Pauza: Wykonaj twarde zatrzymanie ciężaru 2–5 cm nad szyją.",
+                            "Faza koncentryczna: Wyciśnij sztangę w górę, używając wyłącznie siły tricepsów. Klatka piersiowa i przednie aktony barków pozostają wyizolowane z ruchu."
                         ],
                         alt: {
                             name: "Triceps na wyciągu V-Bar (Izolacja - Wyciąg)",
@@ -563,10 +595,12 @@
                         name: "Face Pulls z liną (Wyciąg)", 
                         sets: 3, reps: "12–15", defaultReps: 15, tempo: "2-0-1-2", rpeTarget: "7.5", pctLabel: "Prehab Stożka", restSec: 60, 
                         calcType: "none", valOverride: 20, factor: 1, step: 1.0,
-                        cue: "Fundamentalna prewencja stożka rotatorów (3 serie po 12–15 powt. zapobiegają przemęczeniu m. podgrzebieniowego). Mikroprogresja +1.0 kg.",
+                        cue: "Zatrzymanie dłoni obok uszu na 2 sekundy w pełnym skurczu wzmacnia mięsień podgrzebieniowy i obły mniejszy – kluczowy element prehabilitacyjny stabilizujący bark.",
                         technique: [
-                            "Linka ciągnięta do wysokości czoła z jednoczesnym rozrywaniem końcówek na zewnątrz.",
-                            "Zatrzymanie na końcu ruchu na 2 sekundy w pełnym skurczu m. podgrzebieniowego."
+                            "Setup: Ustawiasz wyciąg mniej więcej na wysokości wzroku. Chwytasz końcówki liny nachwytem lub chwytem młotkowym. Ustawiasz stabilną pozycję na lekko ugiętych nogach ze spiętym brzuchem.",
+                            "Faza koncentryczna (Ciągnięcie i rotacja): Ciągniesz środek liny bezpośrednio w kierunku czoła. Kluczowym elementem jest jednoczesne rozrywanie końcówek liny na zewnątrz i w tył, co wymusza rotację zewnętrzną kości ramiennej. Łokcie prowadzisz wysoko (w płaszczyźnie barków).",
+                            "Pauza: Zatrzymujesz dłonie obok uszu na 2 sekundy w pełnym skurczu. To wzmacnia rotatory zewnętrzne.",
+                            "Faza ekscentryczna: Powoli i w pełni wolicjonalnie pozwalasz linie pociągnąć ręce z powrotem do wyprostu, kontrolując ruch powrotny, aby nie doprowadzić do uderzenia płytek na stosie."
                         ],
                         alt: {
                             name: "Wznosy bokiem z hantlami",
@@ -580,7 +614,16 @@
                     }
                 ],
                 cooldown: [
-                    { name: "Pec stretch przy framudze 90°/120° (60s/stronę)", timerSec: 60 },
+                    { 
+                        name: "Pec stretch przy framudze 90°/120° (60s/stronę)", timerSec: 60,
+                        cue: "Zrezygnuj z pogłębiania zakresu na siłę i nie wykonuj ruchów pulsujących, które wyzwalają odruchowy skurcz obronny z wrzecion mięśniowych.",
+                        technique: [
+                            "Setup (Pozycja wyjściowa): Stań bokiem do framugi drzwi lub pionowego słupa. Oprzyj na nim wewnętrzną stronę przedramienia. Ustaw łokieć na wysokości barku (kąt 90° – celuje w część mostkowo-żebrową) lub unieś go lekko wyżej (kąt 120° – celuje w część obojczykową oraz mięsień piersiowy mniejszy).",
+                            "Faza rozciągania: Wypnij klatkę piersiową w górę (wyprost odcinka piersiowego kręgosłupa). Powoli zrotuj tułów i miednicę w stronę przeciwną do opartej ręki, aż poczujesz ciągnięcie. Pilnuj, aby bark rozciąganej ręki nie zapadał się w przód (protrakcja).",
+                            "Pauza (Izometria statyczna): Trzymaj pozycję statycznie przez równe 60 sekund na stronę. Nie pulsuj.",
+                            "Oddychanie (Downregulation): Oddychaj przeponowo w dolne żebra. Stosuj schemat stymulujący gałąź brzuszną nerwu błędnego: 4 sekundy wdechu przez nos i 8 sekund bardzo powolnego wydechu przez usta."
+                        ]
+                    },
                     { name: "Oddech Vagus Nerve (4-2-8s) - 3 min", timerSec: 180 }
                 ]
             },
@@ -593,7 +636,16 @@
                 mainLiftKey: "squat", mainPct: 0.80, isMobilityDay: false,
                 warmup: [
                     { name: "90/90 Hip Flow", prescription: "6 przejść na stronę" },
-                    { name: "Aktywacja pośladków z minibandem", prescription: "2 serie × 12 kroków" }
+                    { 
+                        name: "Aktywacja pośladków z minibandem (Glute Bridge)", prescription: "2 serie × 12 powt.",
+                        cue: "Napięcie ma być ulokowane wyłącznie w pośladkach, bez kompensacyjnego wyginania odcinka lędźwiowego.",
+                        technique: [
+                            "Setup: Leżysz na plecach, kolana ugięte do około 90°, stopy płasko na ziemi na szerokość bioder. Miniband znajduje się tuż nad kolanami. Odcinek lędźwiowy jest wciśnięty w matę.",
+                            "Faza koncentryczna: Mocno napinasz pośladki i unosisz miednicę do góry, aż uda i tułów utworzą linię prostą. Równocześnie, pchając z pięt, rozpychasz kolana na zewnątrz przeciwko oporowi gumy.",
+                            "Pauza: Trzymasz pozycję w górze przez 2 sekundy.",
+                            "Faza ekscentryczna: Powoli opuszczasz biodra na matę, cały czas walcząc z gumą, aby nie ściągnęła Twoich kolan do środka."
+                        ]
+                    }
                 ],
                 exercises: [
                     {
@@ -601,11 +653,12 @@
                         name: "Barbell Back Squat (Pełny Chwyt Zaciśnięty)", 
                         sets: 4, reps: "6–8", defaultReps: 6, tempo: "3-1-X-0", rpeTarget: "8.0", pctLabel: "80% 1RM", restSec: 180, 
                         calcType: "squat", factor: 0.80, step: 2.5,
-                        cue: "Zastosuj mocne, pełne zaciskanie dłoni na gryfie ('crush the bar' – prawo irradiancji Sherringtona), aby wygenerować maksymalne napięcie stabilizujące górę grzbietu.",
+                        cue: "Silne nogi stabilizują bazę podparcia niezbędną do wygenerowania prawidłowego leg drive przy wyciskaniu. Zamknięty chwyt („crush the bar”) wyzwala irradiancję nerwową.",
                         technique: [
-                            "Pełny chwyt zamknięty z kciukiem – miażdż sztangę w dłoniach, aktywując mięśnie czworoboczne i najszersze grzbietu.",
-                            "Maksymalna sztywność brzucha (manewr Valsalvy) chroni lędźwie.",
-                            "Kontrolowane tempo 3s w dół i pełne zablokowanie pośladków na górze."
+                            "Setup: Podchodzisz pod gryf i układasz go stabilnie na mięśniach czworobocznych. Stosujesz pełny, zamknięty chwyt kciukiem i z maksymalną siłą ściskasz gryf („crush the bar”). Bierzesz potężny wdech do przepony (manewr Valsalvy) i spinasz brzuch. Odchodzisz krok do tyłu, stopy rozstawione na szerokość bioder/barków.",
+                            "Faza ekscentryczna (Zejście): Rozpoczynasz od jednoczesnego zgięcia kolan i lekkiego cofnięcia miednicy. Rozpychasz kolana na zewnątrz. Schodzisz płynnie w dół przez 3 sekundy, utrzymując klatkę wypchniętą w górę, a wektor ciężaru nad środkiem stóp.",
+                            "Pauza: Miękkie hamowanie w najniższym bezbolesnym punkcie (minimum kąt prosty w kolanach), bez puszczania napięcia tułowia i odbijania się.",
+                            "Faza koncentryczna (Wstawanie): Dynamicznie wciskasz całe stopy w ziemię. Biodra i klatka muszą wędrować w górę w tym samym tempie. W górnej fazie spinasz pośladki (bez przeprostu), wypuszczasz powietrze i ponownie nabierasz oddech."
                         ],
                         alt: {
                             name: "Prostowanie nóg na maszynie",
@@ -622,11 +675,12 @@
                         name: "Rumuński Martwy Ciąg (Barbell RDL)", 
                         sets: 3, reps: "8–10", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "60% DL 1RM", restSec: 120, 
                         calcType: "deadlift", factor: 0.60, step: 2.5, valOverride: null,
-                        cue: "Fundamentalny wzorzec Hip-Hinge. Uczy sztywności taśmy tylnej i transferu siły z podłoża (Leg Drive) bez utraty neutralności kręgosłupa.",
+                        cue: "Praca pod obciążeniem (loaded mobility) w skrajnym zakresie ruchu inicjuje sarcomerogenezę, co uelastycznia ścięgna i zmniejsza ryzyko urazu.",
                         technique: [
-                            "Inicjuj ruch wyłącznie cofnięciem bioder w tył przy zablokowanym cylindrze brzusznym.",
-                            "Prowadź sztangę w bezpośrednim kontakcie z udami/piszczelami, aktywując m. najszerszy grzbietu.",
-                            "Zatrzymaj ruch na 1s w punkcie maksymalnego rozciągnięcia grupy kulszowo-goleniowej."
+                            "Setup: Trzymasz sztangę chwytem na szerokość barków, dłonie blisko ud. Ściągasz łopatki, aktywujesz brzuch i „łamiesz” sztangę na udach (napięcie najszerszego grzbietu).",
+                            "Faza ekscentryczna: Przy minimalnym, stałym ugięciu w kolanach, wypychasz biodra mocno w tył (Hip Hinge). Sztanga musi „ślizgać się” po udach, skracając ramię dźwigni w płaszczyźnie strzałkowej. Schodzisz do momentu utrzymania neutralnego odcinka lędźwiowego.",
+                            "Pauza: Zatrzymujesz ruch na 1 sekundę w punkcie maksymalnego naciągnięcia mięśni kulszowo-goleniowych.",
+                            "Faza koncentryczna: Ruchem wychodzącym stricte z pośladków wypychasz biodra w przód. Zaciskasz pośladki na górze w pionowej osi, bez odchylania pleców w przeprost."
                         ],
                         alt: {
                             name: "Uginanie nóg na maszynie siedząc",
@@ -643,10 +697,11 @@
                         name: "McGill Big 3 (Protokół Superstiffness)", 
                         sets: 3, reps: "Izometria (10s)", defaultReps: 10, tempo: "Izometria", rpeTarget: "8.0", pctLabel: "Superstiffness", restSec: 90, 
                         calcType: "none", valOverride: 0, factor: 1, step: 1.0,
-                        cue: "Protokół prof. Stuarta McGilla buduje osiową sztywność antyprzeprostną (Superstiffness), która chroni kręgi L4-L5 podczas mostkowania i generowania Leg Drive na ławce.",
+                        cue: "Zamiast tradycyjnych powtórzeń, ten protokół wykorzystuje 10-sekundowe twarde izometrie. Cel to nauka sztywności cylindra brzusznego (superstiffness) pod leg drive na ławce.",
                         technique: [
-                            "Curl-up, Side Bridge oraz Bird-Dog wykonywane w rygorystycznych 10-sekundowych izometriach.",
-                            "Zero ruchu zgięciowego w odcinku lędźwiowym – liczy się pełna ko-kontrakcja 360° wokół cylindra brzusznego."
+                            "1. Modified Curl-Up: Leżysz na plecach, jedna noga wyprostowana, druga ugięta. Dłonie pod lędźwiami. Z wdechem unosisz głowę, szyję i barki 2-3 cm nad podłogę. Twarde spięcie mięśnia prostego brzucha przez 10 sekund.",
+                            "2. Side Plank: Leżysz na boku, łokieć pod barkiem. Podnosisz miednicę, tworząc idealnie prostą, stalową linię ciała. Napinasz boczną ścianę brzucha i pośladki. Trzymasz 10 sekund.",
+                            "3. Bird Dog: Klęk podparty z kręgosłupem w poziomie. Równocześnie wypychasz zaciskaną pięść w przód i przeciwną piętę w tył. Miednica wypoziomowana. Wytrzymujesz 10 sekund skurczu z napiętym pośladkiem, bez ruchu bocznego."
                         ],
                         alt: {
                             name: "AB Wheel z kolan (Wariant objętościowy)",
@@ -671,7 +726,20 @@
                 badge: "DUP: Objętość/Technika", 
                 desc: "Priorytetyzacja toru ruchu bez SSC, skos dodatni 30° oraz wzmacnianie blokady łokci (Close-Grip).", 
                 mainLiftKey: "bench", mainPct: 0.725, isMobilityDay: false,
-                warmup: [{ name: "Thread the Needle", prescription: "2x8/str" }, { name: "Pompki łopatkowe", prescription: "2x12" }],
+                warmup: [
+                    { 
+                        name: "Otwieranie klatki „Thread the Needle” (Rotacja Th)", prescription: "2 serie × 8 powt./stronę",
+                        cue: "Ruch przygotowuje klatkę piersiową do utworzenia sztywnego mostka bez kompensacji w lędźwiach.",
+                        technique: [
+                            "Setup: Przyjmujesz pozycję klęku podpartego (dłonie pod barkami, kolana pod biodrami). Kręgosłup utrzymujesz w pozycji neutralnej.",
+                            "Faza ekscentryczna („Nawlekanie igły”): Odrywasz prawą dłoń i wsuwasz ją pod lewe ramię, sunąc grzbietem dłoni po podłodze. Tułów rotuje się, a prawy bark i ucho zbliżają się do maty. Miednica pozostaje sztywna i nie ucieka na boki.",
+                            "Pauza: W maksymalnym skręcie przytrzymujesz pozycję na 2 sekundy.",
+                            "Faza koncentryczna: Wracasz do centrum, naciskając mocno lewą ręką na podłoże. Opcjonalnie płynnie przechodzisz do uniesienia prawej ręki w stronę sufitu, otwierając klatkę i podążając wzrokiem za dłonią."
+                        ]
+                    }, 
+                    { name: "Scapular Push-Up (Push-up plus)", prescription: "2 serie × 12 powt." },
+                    { name: "Rotacja zewnętrzna z hantlem leżąc na boku", prescription: "2 serie × 12 powt." }
+                ],
                 exercises: [
                     {
                         id: "ub_pause", code: "B1", isMain: true, isUpperPush: true, isUnilateral: false, isSwapped: false,
@@ -680,9 +748,10 @@
                         calcType: "bench", factor: 0.725, step: 2.5,
                         cue: "Klasyczny wariant DUP. Zatrzymanie sztangi eliminuje odruch SSC (rozciągnięcie-skurcz) i buduje 'groove' pod 100 kg.",
                         technique: [
-                            "Twarde zatrzymanie na mostku bez rozluźniania najszerszego grzbietu.",
-                            "Utrzymaj pełne napięcie leg drive podczas pauzy.",
-                            "Eksploduj w górę pchając sztangę po skosie w tył (J-Curve, 30–45°)."
+                            "Setup (Pozycja wyjściowa): Ustaw pełną retrakcję i depresję łopatek, wbijając górę grzbietu w ławkę. Zastosuj chwyt „bulldog grip” z gryfem spoczywającym nad kośćmi przedramienia. Zbuduj napięcie w nogach, gotując się do wygenerowania siły poziomej.",
+                            "Faza ekscentryczna: Opuszczaj sztangę z pełną kontrolą w stronę dolnej części klatki piersiowej. Łokcie prowadź pod kątem 45–70° od tułowia.",
+                            "Pauza: Zatrzymaj sztangę twardo na mostku na rygorystyczne 3 sekundy. Utrzymaj maksymalne napięcie izometryczne najszerszych grzbietu i nie wypuszczaj powietrza z brzucha. Zatrzymanie rozprasza energię elastyczną.",
+                            "Faza koncentryczna: Wymuś rekrutację jednostek motorycznych poprzez gwałtowne odepchnięcie z nóg (leg drive). Wypchnij sztangę eksplozywnie w tył ku stojakom (kąt 30–45°, trajektoria J-curve), aby skrócić ramię dźwigni dla stawu ramiennego."
                         ],
                         alt: {
                             name: "Wyciskanie hantli na ławce poziomej (Wariant Prewencyjny)",
@@ -700,10 +769,12 @@
                         name: "Podciąganie chwytem neutralnym", 
                         sets: 3, reps: "8–12", defaultReps: 10, tempo: "2-1-X-1", rpeTarget: "8.5", pctLabel: "Wertykal Pull", restSec: 120, 
                         calcType: "none", valOverride: 0, factor: 1, step: 2.5,
-                        cue: "Doskonały zakres hipertroficzny. Przejście na chwyt równoległy wyeliminowało ryzyko dla stawu ramiennego.",
+                        cue: "Chwyt neutralny całkowicie eliminuje naprężenia skrętne w nadgarstkach i rotację wewnętrzną barku, tworząc najbezpieczniejsze środowisko dla obręczy barkowej.",
                         technique: [
-                            "Aktywuj ruch ściągnięciem łopatek w dół (depresja).",
-                            "Intencja 'ściągania łokci do kieszeni'. Zapas siłowy ułatwi ewentualne dokładanie ciężaru w przyszłości."
+                            "Setup: Chwyć drążek równoległy na szerokość barków (wnętrza dłoni do siebie). Zawiśnij na aktywnych łopatkach, nie dopuszczając do całkowitego rozluźnienia więzadeł.",
+                            "Faza koncentryczna: Zainicjuj ruch od ściągnięcia łopatek w dół (depresja głowy kości ramiennej). Skup się na intencji ciągnięcia łokci bezpośrednio „do tylnych kieszeni spodni”, prowadząc klatkę piersiową do drążka bez zamykania barków w przód.",
+                            "Pauza: Wytrzymaj 1 sekundę w maksymalnym napięciu mięśnia najszerszego grzbietu.",
+                            "Faza ekscentryczna: Opuszczaj ciało przez 2–3 sekundy do pełnego wyprostu ramion, utrzymując wolicjonalną kontrolę nad łopatkami w najniższym punkcie ruchu."
                         ],
                         alt: {
                             name: "Ściąganie wyciągu górnego (Neutralnie)",
@@ -719,11 +790,12 @@
                         name: "Wyciskanie hantli skos dodatni (kąt 30°)", 
                         sets: 4, reps: "6–8", defaultReps: 8, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Skos 30° (Góra Klatki)", restSec: 120, 
                         calcType: "none", valOverride: 17.5, factor: 1, step: 2.0,
-                        cue: "Niski skos (30°) maksymalizuje rekrutację części obojczykowej m. piersiowego większego oraz przedniego aktonu barku przy zachowaniu wektora zbliżonego do wyciskania leżąc.",
+                        cue: "Niski skos (30°) maksymalizuje rekrutację górnej klatki, chroniąc bark przed nadmierną kompresją, która występuje na wysokich ławkach.",
                         technique: [
-                            "Ustaw ławkę na precyzyjny kąt 30° (pierwszy lub drugi ząbek) – wyższy kąt przenosi pracę z klatki na sam bark.",
-                            "Prowadź łokcie pod kątem ok. 45–60° względem tułowia (w płaszczyźnie łopatki) z chwytem lekko zrotowanym (pół-neutralnym).",
-                            "Zatrzymaj hantle na 1s w dolnej fazie rozciągnięcia przy zachowaniu depresji i retrakcji łopatek."
+                            "Setup: Ustaw ławkę na niski skos (około 30°). Chwyć hantle chwytem pół-neutralnym (zrotowane pod kątem 45°), co otwiera przestrzeń podbarkową i chroni stożek rotatorów.",
+                            "Faza ekscentryczna: Opuszczaj obciążenie powoli, prowadząc łokcie w płaszczyźnie łopatki (lekko przed tułowiem). Klatka piersiowa jest wypchnięta, a łopatki wciśnięte w ławkę.",
+                            "Pauza: Zatrzymaj hantle na 1 sekundę w dolnym punkcie głębokiego, bezbolesnego rozciągnięcia.",
+                            "Faza koncentryczna: Wyciśnij ciężar w górę i lekko do wewnątrz, używając skurczu górnych włókien klatki. Nie uderzaj hantlami o siebie na górze."
                         ],
                         alt: {
                             name: "Wyciskanie hantli OHP siedząc (kąt 75–80°)",
@@ -741,10 +813,12 @@
                         name: "Close-Grip Bench Press (Wąski chwyt na triceps)", 
                         sets: 3, reps: "6–8", defaultReps: 8, tempo: "3-0-1-0", rpeTarget: "8.0", pctLabel: "60% 1RM", restSec: 120, 
                         calcType: "bench", factor: 0.60, step: 2.5, valOverride: null,
-                        cue: "Potężna siła Lockoutu (blokady wyprostu) niezbędna do przełamania strefy krytycznej pod 100 kg. Chwyt na szerokość barków dla zdrowia nadgarstka.",
+                        cue: "Ćwiczenie buduje potężną siłę blokady (lockout), kluczową do przełamania strefy krytycznej przy ataku na 100 kg. Chwyt dokładnie na szerokość barków.",
                         technique: [
-                            "Nie chwytaj zbyt wąsko – idealnie na szerokość barków, by nie wyłamywać nadgarstków na boki.",
-                            "Prowadź łokcie blisko tułowia (ok. 30–45°) i wyciskaj eksplozywnie z dolnej części mostka."
+                            "Setup: Złap gryf dokładnie na szerokość barków. Zbyt wąski chwyt wyłamuje nadgarstki na boki i generuje niebezpieczne siły ścinające.",
+                            "Faza ekscentryczna: Prowadź sztangę niżej niż w klasycznym wyciskaniu, celując w splot słoneczny lub dół klatki. Łokcie prowadź bardzo blisko tułowia (kąt ok. 30°), co aktywuje triceps i przedni akton barku.",
+                            "Pauza: Zrób miękkie, jednosekundowe zatrzymanie na ciele.",
+                            "Faza koncentryczna: Eksplozywnie wyprostuj ramiona, zachowując tor ruchu."
                         ],
                         alt: {
                             name: "Uginanie przedramion młotkowe (Izolacja)",
@@ -758,8 +832,26 @@
                     }
                 ],
                 cooldown: [
-                    { name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60 },
-                    { name: "Rozciąganie m. piersiowego i dwugłowego przy ścianie (60s/stronę)", timerSec: 60 }
+                    { 
+                        name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60,
+                        cue: "Zdejmuje to obciążenie kompresyjne z osi kręgosłupa i relaksuje prostowniki grzbietu. Bezwzględnie unikaj zeskakiwania z drążka.",
+                        technique: [
+                            "Setup: Znajdź drążek (lub użyj skrzyni pod nogi), by chwycić go nachwytem na szerokość barków bez podskakiwania.",
+                            "Faza wejścia (Ekscentryka): Powoli przenieś ciężar ciała na dłonie. (Jeśli barki bolą, zostaw palce stóp na ziemi jako wentyl bezpieczeństwa).",
+                            "Pauza (Zwis): Całkowicie rozluźnij mięśnie wokół łopatek i najszerszy grzbietu. Pozwól, by grawitacja pociągnęła miednicę w dół, a barki uniosły się pod same uszy. Trzymaj 60 sekund z powolnym oddechem.",
+                            "Faza wyjścia (Koncentryka): Delikatnie postaw stopy na ziemi, unikając nagłego szarpnięcia."
+                        ]
+                    },
+                    { 
+                        name: "Rozciąganie m. piersiowego i dwugłowego przy ścianie (60s/stronę)", timerSec: 60,
+                        cue: "Klatka musi być wypchnięta w górę, bark nie może zapadać się w przód. Zrezygnuj z pogłębiania na siłę i szarpania tkanki.",
+                        technique: [
+                            "Setup: Stań bokiem do framugi drzwi lub słupa. Oprzyj na nim wewnętrzną stronę przedramienia. Ustaw łokieć na wysokości barku (kąt 90°) lub lekko wyżej (120°).",
+                            "Faza rozciągania: Powoli zrotuj tułów w stronę przeciwną do opartej ręki, aż poczujesz głębokie ciągnięcie w klatce piersiowej i bicepsie.",
+                            "Pauza: Trzymaj pozycję statycznie przez równe 60 sekund na stronę.",
+                            "Oddychanie (Downregulation): Oddychaj przeponowo według schematu stymulującego układ przywspółczulny – powolny wdech nosem (4 sekundy) i jeszcze dłuższy wydech ustami (8 sekund)."
+                        ]
+                    }
                 ]
             },
 
@@ -769,17 +861,31 @@
                 badge: "Deadlift & Izometria", 
                 desc: "Siła ciągu, stabilizacja unilateralna, prawo irradiancji chwytu (Spacer Farmera) i przebudowa kolagenu łokci.", 
                 mainLiftKey: "deadlift", mainPct: 0.825, isMobilityDay: false,
-                warmup: [{ name: "Side Plank", prescription: "2x20s" }, { name: "Monster Walk", prescription: "2x15" }],
+                warmup: [
+                    { name: "Side Plank", prescription: "2x20s" }, 
+                    { 
+                        name: "Monster Walk (Chód z taśmą)", prescription: "2 serie × 10 kroków/stronę",
+                        cue: "Przy każdym kontakcie stopy z podłożem mocno akcentujesz na sekundę napięcie mięśnia pośladkowego średniego.",
+                        technique: [
+                            "Setup: Stoisz w lekkim rozkroku, miniband założony nad kolanami. Schodzisz do pozycji ćwierćprzysiadu (hip hinge, biodra cofnięte, kolana lekko ugięte). Sylwetka wyprostowana, brzuch zablokowany.",
+                            "Ruch w przód: Wykonujesz szeroki krok jedną nogą w przód i na zewnątrz (po skosie 45°), rozciągając gumę. Powoli dostawiasz drugą nogę (nie pozwól, by guma gwałtownie złączyła kolana).",
+                            "Pauza: Przy każdym kroku akcentujesz spięcie pośladka nogi wykrocznej.",
+                            "Ruch w tył: Wracasz, wykonując analogiczne kroki w tył i na zewnątrz, co wymusza silniejszą rekrutację stabilizatorów miednicy."
+                        ]
+                    }
+                ],
                 exercises: [
                     {
                         id: "lb_dl", code: "B1", isMain: true, isUpperPush: false, isUnilateral: false, isSwapped: false,
-                        name: "Conventional Deadlift", 
+                        name: "Conventional Deadlift (Martwy Ciąg Klasyczny)", 
                         sets: 3, reps: "4–5", defaultReps: 5, tempo: "2-1-X-0", rpeTarget: "8.0", pctLabel: "82.5% 1RM", restSec: 240, 
                         calcType: "deadlift", factor: 0.825, step: 2.5,
-                        cue: "Budowa siły bazowej. Nie bój się użyć pasków (lifting straps) do martwego ciągu, aby chronić zmęczony OUN i bicepsy przed zerwaniem.",
+                        cue: "Utrzymuj cylinder brzuszny w pełnej sztywności antyzgięciowej; sztanga musi sunąć po piszczelach i udach, skracając ramię dźwigni.",
                         technique: [
-                            "Zdejmij luz z gryfu przed pociągnięciem ('slack pull').",
-                            "Napnij najszerszy grzbietu, pociągając w kierunku kolan, stabilizując bark."
+                            "Setup: Ustaw stopy na szerokość bioder. Złap sztangę nachwytem, zdejmij luz z gryfu („slack pull”) i wkręć dłonie w sztangę, generując irradiancję nerwową. Pociągnij łopatki do „tylnych kieszeni” aktywując najszerszy grzbietu.",
+                            "Faza koncentryczna: Zainicjuj ruch pchając ziemię stopami. Sztanga musi sunąć blisko nóg, minimalizując ramię dźwigni w płaszczyźnie strzałkowej.",
+                            "Pauza (Lockout): Zablokuj biodra i kolana jednocześnie, mocno spinając pośladki bez odchylania lędźwi w przeprost.",
+                            "Faza ekscentryczna: Zainicjuj opuszczanie zgięciem w biodrach (hip hinge). Dopiero gdy sztanga minie rzepki, ugnij kolana. Odłóż ciężar na ziemię (martwy punkt)."
                         ],
                         alt: {
                             name: "Wspięcia na łydki stojąc z hantlami",
@@ -796,10 +902,12 @@
                         name: "Bulgarian Split Squat (Przysiad bułgarski)", 
                         sets: 3, reps: "8–10 / nogę", defaultReps: 10, tempo: "3-1-1-0", rpeTarget: "8.0", pctLabel: "Asymetria Dół", restSec: 90, 
                         calcType: "squat", factor: 0.22, step: 1.0,
-                        cue: "Usuwa asymetrie napięciowe między kończynami i stabilizuje miednicę (m. pośladkowy średni), co przekłada się na symetryczny Leg Drive na ławce. Tonaż liczony dla obu nóg (×2).",
+                        cue: "Lekkie pochylenie tułowia przenosi wektor siły na pośladek wielki, odciążając więzadło rzepki i redukując siły ścinające w stawie kolanowym.",
                         technique: [
-                            "Kąt pochylenia tułowia w przód zwiększa zaangażowanie pośladka kosztem przeciążenia kolana.",
-                            "Kontrolowana 3-sekundowa faza ekscentryczna bez odbijania na dole."
+                            "Setup: Stojąc tyłem do ławki, oprzyj grzbiet stopy. Ustaw stopę wykroczną stabilnie. Zablokuj miednicę i usztywnij rdzeń. Trzymaj hantle neutralnie, ściągając łopatki.",
+                            "Faza ekscentryczna (Zejście): Schodź powoli (3 sekundy), zginając przednie kolano. Pochyl tułów lekko do przodu (kąt 20-30°).",
+                            "Pauza: Zatrzymaj ruch na 1 sekundę na dole, celując w głębokie naciągnięcie pośladka.",
+                            "Faza koncentryczna: Dynamicznie wciśnij całą stopę (pięta/krawędź) w podłogę. Wróć w górę, nie doprowadzając do agresywnego przeprostu kolana."
                         ]
                     },
                     {
@@ -807,11 +915,12 @@
                         name: "Heavy Farmer's Walk (Spacer Farmera)", 
                         sets: 4, reps: "30 metrów", defaultReps: 30, tempo: "Dynamiczny marsz", rpeTarget: "8.0–8.5", pctLabel: "Irradiancja & Core", restSec: 90, 
                         calcType: "none", valOverride: 25, factor: 1, step: 2.5,
-                        cue: "Chwyt ciężkich hantli/trap-bara (min. 2×25–35 kg). Maksymalne miażdżenie rękojeści wyzwala prawo irradiancji Sherringtona (odruchowa ko-kontrakcja stożka rotatorów) oraz buduje antyrotacyjną sztywność cylindra brzusznego.",
+                        cue: "Zastosuj crush grip – maksymalne zaciśnięcie dłoni wyzwala irradiancję Sherringtona, która pobudza stożek rotatorów i betonuje korpus.",
                         technique: [
-                            "Zaciśnij dłonie z pełną siłą (kciuk zamyka chwyt) i ustaw łopatki w lekkiej depresji (nie pozwalaj barkom wisieć na strukturach pasywnych).",
-                            "Stawiaj krótkie, szybkie kroki na pełnej stopie, eliminując kołysanie miednicy w płaszczyźnie czołowej.",
-                            "Oddychaj płytko 'za tarczą' napiętego brzucha (ko-kontrakcja m. poprzecznego i skośnych)."
+                            "Setup: Podnieś ciężar idealną techniką martwego ciągu. Zablokuj łopatki w depresji – nie pozwalaj barkom „wisieć” na stawach.",
+                            "Faza ruchu (Marsz): Krótkie, twarde kroki. Przetaczaj stopy aktywując pośladki średnie, eliminując kołysanie miednicy w płaszczyźnie czołowej.",
+                            "Oddychanie: Oddychaj krótko i płytko „za tarczą” spiętych mięśni brzucha, zachowując wysokie ciśnienie wewnątrzbrzuszne.",
+                            "Odłożenie: Odłóż hantle przez rygorystyczny hip hinge, nie zaokrąglając pleców na sam koniec."
                         ]
                     },
                     {
@@ -819,10 +928,12 @@
                         name: "Protokół Izometryczny Ebonie Rio (Łokcie / 45s)", 
                         sets: 5, reps: "45s", defaultReps: 45, tempo: "Izometria", rpeTarget: "70–80% MVC", pctLabel: "Prehab Ścięgien", restSec: 120, 
                         calcType: "none", valOverride: 12.5, factor: 1, step: 1.0,
-                        cue: "Kluczowa profilaktyka ścięgien łokciowych (5 serii x 45s na 70–80% MVC) wywołująca analgezję ośrodkową i przebudowę macierzy kolagenowej.",
+                        cue: "Napięcie izometryczne znosi hamowanie korowe, wycisza układ nerwowy, natychmiastowo redukując ból ścięgna (analgezja ośrodkowa) i dając sygnał do przebudowy kolagenu.",
                         technique: [
-                            "Utrzymuj kąt ok. 90° w stawie łokciowym przy 70–80% maksymalnego skurczu dowolnego (MVC).",
-                            "Izometria przez 45 sekund redukuje hamowanie korowe i wycisza reaktywne przeciążenie ścięgna."
+                            "Setup: Ustaw się przy wyciągu z rączką (chwyt neutralny) lub weź hantel. Przyklej łokieć do boku tułowia, stabilizując bark.",
+                            "Faza koncentryczna: Zegnij łokieć do kąta ok. 90°. Wygeneruj napięcie rzędu 70-80% maksymalnego skurczu (MVC).",
+                            "Pauza (Izometria): Utrzymaj twardy, statyczny skurcz nieprzerwanie przez 45 sekund.",
+                            "Faza ekscentryczna: Bardzo powoli opuść ciężar. Odpocznij rygorystyczne 120 sekund."
                         ],
                         alt: {
                             name: "Izometria tricepsa na wyciągu jednorącz (Chwyt neutralny)",
@@ -836,8 +947,20 @@
                     }
                 ],
                 cooldown: [
-                    { name: "Hamstring stretch leżąc z taśmą (60s/nogę)", timerSec: 60 },
-                    { name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60 }
+                    { 
+                        name: "Hamstring stretch leżąc z taśmą (60s/nogę)", timerSec: 60,
+                        cue: "Statyczne rozciąganie bez pogłębiania na siłę w celu resetu przywspółczulnego.",
+                        technique: ["Połóż się na plecach, załóż taśmę na stopę i przyciągnij prostą nogę trzymając statycznie przez 60s na stronę."]
+                    },
+                    { 
+                        name: "Zwis pasywny dekompresyjny na drążku (60s)", timerSec: 60,
+                        cue: "Całkowicie rozluźnij mięśnie otaczające łopatki, pozwalając na powysiłkową dekompresję osi kręgosłupa.",
+                        technique: [
+                            "Setup: Chwyć drążek nachwytem bez podskakiwania.",
+                            "Zwis: Przenieś ciężar na dłonie (jeśli barki bolą, palce stóp mogą dotykać ziemi). Rozluźnij najszerszy grzbietu. Trzymaj 60 sekund z powolnym wydechem.",
+                            "Wyjście: Powoli postaw stopy, nie zeskakuj, aby nie wywołać skurczu obronnego."
+                        ]
+                    }
                 ]
             },
 
@@ -847,24 +970,60 @@
                 badge: "Regeneracja Powięziowa", 
                 desc: "Redukcja tonusu układu współczulnego po cyklu PPL/DUP.", 
                 mainLiftKey: "bench", mainPct: 0, isMobilityDay: true,
-                warmup: [{ name: "Box Breathing (4-4-4-4)", prescription: "3 minuty" }],
+                warmup: [
+                    { 
+                        name: "Box Breathing (4-4-4-4 – Oddech Pudełkowy)", prescription: "3 minuty",
+                        cue: "Mechanizm ten resetuje autonomiczny układ nerwowy, pomagając w wyciszeniu współczulnym po tygodniu treningowym.",
+                        technique: [
+                            "Setup: Wygodna pozycja (leżenie/siad), dłonie na dolnych żebrach.",
+                            "Faza 1 (Wdech): Płynny wdech przez nos (4 sekundy), kierując powietrze w dół – żebra rozszerzają się na boki.",
+                            "Faza 2 (Pauza): Zatrzymujesz oddech na 4 sekundy bez zaciskania gardła.",
+                            "Faza 3 (Wydech): Wypuszczasz powietrze ustami bardzo powoli przez 4 sekundy.",
+                            "Faza 4 (Pauza): Zatrzymujesz oddech na 4 sekundy na pustych płucach. Powtarzaj cykl."
+                        ]
+                    }
+                ],
                 exercises: [
                     {
                         id: "sat_cars", code: "M1", name: "CARs Barków i Bioder", sets: 3, reps: "5/str", defaultReps: 5, tempo: "Bardzo wolno", rpeTarget: "N/A", pctLabel: "Prehab FRC", restSec: 30, calcType: "none", valOverride: 0,
-                        cue: "Stymuluje mechanoreceptory, poprawiając obieg mazi stawowej w bolesnym prawym barku.", technique: ["Izolowane koła stawowe w maksymalnym powolnym zakresie."]
+                        cue: "Brak tradycyjnej pauzy. Cały ruch (ok. 10-15s na koło) jest powolnym skurczem przesuwającym płyn stawowy i mapującym zakresy w korze ruchowej.", 
+                        technique: [
+                            "Setup: Stań prosto, oparty o ścianę dla zablokowania tułowia. Napięcie ciała na ok. 30% MVC.",
+                            "Bark: Powoli unoś wyprostowaną rękę w przód i górę. Za głową zrotuj ramię do wewnątrz i kontynuuj w tył, rysując wielkie koło. Odwróć kierunek w drugą stronę.",
+                            "Biodro: Zegnij kolano, unieś udo do klatki. Odwiedź na zewnątrz do oporu, zrotuj do wewnątrz i przepchnij nogę w tył. Odwróć ruch."
+                        ]
                     },
                     {
                         id: "sat_thor", code: "M2", name: "Mobilizacja Odcinka Piersiowego na Rollerze", sets: 3, reps: "10 wyprostów", defaultReps: 10, tempo: "Pauza na dole", rpeTarget: "N/A", pctLabel: "Th Extension", restSec: 45, calcType: "none", valOverride: 0,
-                        cue: "Ustawia zdrowy mostek na ławce. Odcinek lędźwiowy pozostaje stabilny na ziemi.", technique: ["Nie zginaj lędźwi, szukaj wyprostu tylko w odcinku łopatkowym."]
+                        cue: "Miednica nie odrywa się od ziemi, lędźwie nie wyginają się. Izolujesz wyprost wyłącznie do klatki piersiowej.", 
+                        technique: [
+                            "Setup: Połóż się na plecach, twardy roller poprzecznie pod Th4-Th8. Pośladki płasko na ziemi. Dłonie na karku, łokcie blisko siebie, by odciągnąć łopatki.",
+                            "Wyprost (Ekscentryka): Z wdechem odchyl głowę i górę pleców za roller w stronę podłogi.",
+                            "Pauza: Zatrzymaj w skrajnym rozciągnięciu na 2 sekundy.",
+                            "Faza koncentryczna: Z wydechem podnieś klatkę siłą mięśni brzucha. Przesuń roller o jeden kręg i powtórz."
+                        ]
                     },
                     {
                         id: "sat_hang", code: "M3", name: "Zwis Pasywny dekompresyjny na Drążku", sets: 3, reps: "60s", defaultReps: 60, tempo: "Izometria", rpeTarget: "N/A", pctLabel: "Dekompresja", restSec: 60, calcType: "none", valOverride: 0,
-                        cue: "Zdejmuje kompresję z osi kręgosłupa i relaksuje m. najszerszy grzbietu.", technique: ["Chwyt z pełnym rozluźnieniem ramion."]
+                        cue: "Zdejmuje kompresję z osi kręgosłupa i relaksuje m. najszerszy grzbietu. Bezwzględnie unikaj zeskakiwania z drążka.", 
+                        technique: [
+                            "Setup: Chwyć drążek nachwytem bez podskakiwania.",
+                            "Zwis: Całkowicie rozluźnij mięśnie otaczające łopatki. Pozwól barkom unieść się pod uszy. Oddychaj wolno. Trzymaj 60 sekund.",
+                            "Wyjście: Postaw stopy delikatnie na ziemi."
+                        ]
                     }
                 ],
                 cooldown: [
-                    { name: "Rozciąganie klatki piersiowej i powięzi piersiowo-lędźwiowej (60s/stronę)", timerSec: 60 },
-                    { name: "Oddech Vagus Nerve (Wdech 4s/Pauza 2s/Wydech 8s)", timerSec: 300 }
+                    { 
+                        name: "Rozciąganie klatki piersiowej i powięzi piersiowo-lędźwiowej (60s/stronę)", timerSec: 60,
+                        cue: "Pasywne uwalnianie napięcia strukturalnego po całym tygodniu siłowym.",
+                        technique: ["Pozycje statyczne bez pogłębiania, zsynchronizowane z wydechem."]
+                    },
+                    { 
+                        name: "Oddech Vagus Nerve (Wdech 4s/Pauza 2s/Wydech 8s)", timerSec: 300,
+                        cue: "Aktywacja układu przywspółczulnego dla superkompensacji w weekend.",
+                        technique: ["Pełen cykl oddechowy z mocno wydłużoną fazą wydechu."]
+                    }
                 ]
             }
         };
@@ -1047,7 +1206,8 @@
         function toggleDeloadMode() {
             userProfile.deloadMode = !userProfile.deloadMode;
             if (!userProfile.deloadMode) {
-                userProfile.sessionsSinceDeload = 0;
+                userProfile.sessionsSinceDeload = 0; 
+                userProfile.amrapDoneInBlock = false;
             }
             localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
             updateBannersAndCounters();
@@ -1055,6 +1215,14 @@
         }
 
         function initApp() {
+            Object.keys(programData).forEach(dayKey => {
+                programData[dayKey].exercises.forEach(ex => {
+                    if (ex.alt && userProfile.swaps && userProfile.swaps[ex.id] && !ex.isSwapped) {
+                        performRawSwap(ex);
+                    }
+                });
+            });
+
             updateHeaderProgress();
             updateBannersAndCounters();
             const savedDay = userProfile.activeDay || 'upperA';
@@ -1085,6 +1253,8 @@
             const ex = programData[dayId].exercises[exIdx];
             if(ex.alt) {
                 performRawSwap(ex);
+                userProfile.swaps[ex.id] = ex.isSwapped;
+                localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
                 selectDay(dayId);
 
                 document.querySelectorAll('#exercisesContainer input').forEach(el => {
@@ -1109,18 +1279,15 @@
         }
 
         function selectDay(dayKey) {
-            // --- POCZĄTEK DODANEGO ZABEZPIECZENIA ---
             if (userProfile.activeDay && userProfile.activeDay !== dayKey) {
-                // Sprawdzamy, czy jakakolwiek seria została odznaczona na zielono (trening w toku)
                 const hasCheckedSets = document.querySelectorAll('#exercisesContainer .set-check.bg-emerald-600').length > 0;
                 if (hasCheckedSets) {
                     const confirmSwitch = confirm("⚠️ Trening w toku! Masz odznaczone serie. Jeśli zmienisz dzień, wpisane dane przepadną. Czy na pewno chcesz przełączyć zakładkę?");
                     if (!confirmSwitch) {
-                        return; // Przerwanie funkcji - zatrzymuje użytkownika na obecnym dniu
+                        return;
                     }
                 }
             }
-            // --- KONIEC DODANEGO ZABEZPIECZENIA ---
 
             userProfile.activeDay = dayKey;
             localStorage.setItem('sciBench_profile_v8', JSON.stringify(userProfile));
@@ -1142,8 +1309,7 @@
 
             const day = programData[dayKey];
             const inTestWeekWindow = (!day.isMobilityDay && !userProfile.deloadMode && (userProfile.sessionsSinceDeload >= 12 && userProfile.sessionsSinceDeload < 16));
-            // Test AMRAP (85% 1RM) jest ograniczony wyłącznie do dnia Upper A
-            const isTestDay = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperA');
+            const isTestDay = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperA') && !userProfile.amrapDoneInBlock;
             const isUpperBTestWeek = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperB');
             const isLowReadiness = (currentSessionReadiness.started && currentSessionReadiness.lowReadiness && !day.isMobilityDay);
             
@@ -1172,7 +1338,6 @@
             } else {
                 targetContainer.classList.remove('hidden');
                 
-                // Precyzyjna weryfikacja ćwiczenia głównego (isMain: true) oraz flagi isUpperPush: true
                 const mainEx = day.exercises.find(e => e.isMain === true);
                 const isMainSubjectToRehab = (userProfile.rehabMode === true) && Boolean(mainEx && mainEx.isUpperPush === true);
                 const mainRehabMult = isMainSubjectToRehab ? 0.85 : 1.0;
@@ -1197,13 +1362,24 @@
             }
 
             let warmupHTML = '';
-            day.warmup.forEach(w => {
+            day.warmup.forEach((w, i) => {
                 warmupHTML += `
-                    <div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/70 border border-slate-800/80 hover:border-slate-700 transition">
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-slate-900/70 border border-slate-800/80 hover:border-slate-700 transition ${w.technique ? 'mb-1' : ''}">
                         <input type="checkbox" class="w-4 h-4 accent-amber-500 rounded cursor-pointer shrink-0">
                         <span class="text-xs sm:text-sm font-semibold text-slate-100 flex-1">${w.name}</span>
-                        <span class="text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded shrink-0">${w.prescription}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded">${w.prescription}</span>
+                            ${w.technique ? `<button onclick="toggleTech('tech_w_${dayKey}_${i}')" class="px-2 py-1 rounded bg-slate-800 text-amber-400 hover:text-amber-300 text-xs border border-slate-700 transition shadow-sm">📖</button>` : ''}
+                        </div>
                     </div>
+                    ${w.technique ? `
+                    <div id="tech_w_${dayKey}_${i}" class="tech-panel mb-3 p-3 rounded-lg bg-amber-950/20 border border-amber-900/30 text-xs text-slate-300">
+                        ${w.cue ? `<p class="font-semibold text-amber-400/80 mb-1.5">💡 Wskazówka: ${w.cue}</p>` : ''}
+                        <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-400">
+                            ${w.technique.map(t=>`<li>${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
                 `;
             });
             document.getElementById('warmupContainer').innerHTML = warmupHTML;
@@ -1214,17 +1390,15 @@
                 const exRehabMult = isExSubjectToRehab ? 0.85 : 1.0;
                 const exReadinessMult = (ex.isMain && isLowReadiness) ? 0.95 : 1.0;
 
-                // Sprawdź czy dla ćwiczenia głównego mamy aktywny Tydzień Testowy AMRAP (tylko Upper A w sesjach 13-16 i brak Rehab)
                 const isExAmrapTest = (ex.isMain && isTestDay);
                 const isExUpperBTechWeek = (ex.isMain && isUpperBTestWeek);
 
-                // Wylicz liczbę serii roboczych (uwzględniając Deload, Tydzień Testowy AMRAP oraz Autoregulację CNS -1 seria dla isMain)
                 let effectiveSets = ex.sets;
                 if (!day.isMobilityDay) {
                     if (isExAmrapTest) {
-                        effectiveSets = 2; // S1: Rozgrzewkowa, S2: AMRAP 85% 1RM
+                        effectiveSets = 2; 
                     } else if (isExUpperBTechWeek) {
-                        effectiveSets = 4; // 4 serie x 5 powt. @ 70% 1RM
+                        effectiveSets = 4; 
                     } else if (userProfile.deloadMode) {
                         effectiveSets = Math.max(1, Math.ceil(ex.sets * 0.5));
                     } else if (ex.isMain && isLowReadiness) {
@@ -1232,7 +1406,6 @@
                     }
                 }
 
-                // Podwójna progresja dla ćwiczeń akcesoryjnych (isMain: false)
                 const accKey = `${ex.id}_${ex.isSwapped ? 'alt' : 'base'}`;
                 const accMemory = (!ex.isMain && userProfile.accessoryHistory && userProfile.accessoryHistory[accKey]) ? userProfile.accessoryHistory[accKey] : null;
                 let doubleProgBadge = false;
@@ -1253,7 +1426,6 @@
                     wVal = roundWeight(userProfile[`${ex.calcType}1RM`] * ex.factor * exRehabMult * exReadinessMult, ex.step || 2.5);
                 }
 
-                // Aplikacja Dynamicznej Podwójnej Progresji dla akcesoriów (z zachowaniem ex.step)
                 if (!day.isMobilityDay && !ex.isMain && accMemory) {
                     if (accMemory.progressed) {
                         doubleProgBadge = true;
@@ -1346,7 +1518,7 @@
                             </div>
                             <div class="flex items-start gap-1.5 shrink-0">
                                 ${ex.alt ? `<button onclick="swapExercise('${dayKey}', ${idx})" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700 transition">🔄 Zamień</button>` : ''}
-                                <button onclick="toggleTech('tech_${ex.id}')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 text-xs border border-slate-700 transition">📖 Technika</button>
+                                <button onclick="toggleTech('tech_${ex.id}')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 text-xs border border-slate-700 transition shadow-sm">📖 Technika</button>
                                 <button onclick="startRestTimer(${ex.restSec})" class="px-2 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 text-xs border border-blue-800/50 transition">⏱️ ${ex.restSec}s</button>
                             </div>
                         </div>
@@ -1367,13 +1539,25 @@
             let cooldownHTML = '';
             day.cooldown.forEach((c, i) => {
                 cooldownHTML += `
-                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/70 border border-slate-800/80">
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/70 border border-slate-800/80 ${c.technique ? 'mb-1' : ''}">
                         <span class="text-xs sm:text-sm font-semibold text-slate-100 flex-1">${i+1}. ${c.name}</span>
-                        <button onclick="startRestTimer(${c.timerSec})" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-mono border border-emerald-800/50 transition">⏱️ ${c.timerSec}s</button>
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${c.technique ? `<button onclick="toggleTech('tech_c_${dayKey}_${i}')" class="px-2 py-1.5 rounded-lg bg-slate-800 text-emerald-400 hover:text-emerald-300 text-xs border border-slate-700 transition shadow-sm">📖</button>` : ''}
+                            <button onclick="startRestTimer(${c.timerSec})" class="px-2.5 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-mono border border-emerald-800/50 transition">⏱️ ${c.timerSec}s</button>
+                        </div>
                     </div>
+                    ${c.technique ? `
+                    <div id="tech_c_${dayKey}_${i}" class="tech-panel mb-3 p-3 rounded-lg bg-emerald-950/20 border border-emerald-900/30 text-xs text-slate-300">
+                        ${c.cue ? `<p class="font-semibold text-emerald-400/80 mb-1.5">💡 Wskazówka: ${c.cue}</p>` : ''}
+                        <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-400">
+                            ${c.technique.map(t=>`<li>${t}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
                 `;
             });
             document.getElementById('cooldownContainer').innerHTML = cooldownHTML;
+            restoreDraftState();
         }
 
         let audioCtx, timerInt, timerEnd = 0;
@@ -1505,12 +1689,31 @@
             const dayKey = userProfile.activeDay;
             const day = programData[dayKey];
             if(day.isMobilityDay) return;
+            // --- TUTAJ WKLEJASZ NOWY KOD WALIDACYJNY Z PUNKTU B ---
+            const checkedSets = document.querySelectorAll('#exercisesContainer .set-check.bg-emerald-600');
+            if (checkedSets.length === 0 && !userProfile.deloadMode) {
+                alert("⚠️ Nie zaznaczono ani jednej wykonanej serii! Zaznacz wykonane serie (✓), aby zapisać trening.");
+                return;
+            }
+        
+            let hasInvalidInputs = false;
+            checkedSets.forEach(btn => {
+                const baseId = btn.id.replace('btn_', '');
+                const wEl = document.getElementById(`${baseId}_w`);
+                const rEl = document.getElementById(`${baseId}_r`);
+                
+                if (wEl && (wEl.value.trim() === "" || parseFloat(wEl.value) < 0)) hasInvalidInputs = true;
+                if (rEl && (rEl.value.trim() === "" || parseInt(rEl.value) <= 0)) hasInvalidInputs = true;
+            });
+        
+            if (hasInvalidInputs) {
+                alert("🛑 Wykryto nieprawidłowe wartości (brak ciężaru, zera lub liczby ujemne) w zaznaczonych seriach. Popraw dane przed zapisem.");
+                return;
+            }
 
-            // Utworzenie migawki (snapshot) profilu przed zmianami
             const profileSnapshot = JSON.parse(JSON.stringify(userProfile));
 
             const inTestWeekWindow = (!day.isMobilityDay && !userProfile.deloadMode && (userProfile.sessionsSinceDeload >= 12 && userProfile.sessionsSinceDeload < 16));
-            // Test AMRAP 85% 1RM jest aktywny wyłącznie w dniu Upper A
             const isTestDay = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperA');
             const isUpperBTestWeek = inTestWeekWindow && !userProfile.rehabMode && (dayKey === 'upperB');
             const isLowReadiness = (currentSessionReadiness.started && currentSessionReadiness.lowReadiness);
@@ -1524,7 +1727,6 @@
             let amrapWeight = 0;
             let amrapReps = 0;
 
-            // Wyliczenie docelowego obciążenia (Target Weight) dla boju głównego z uwzględnieniem mnożników sesji
             const mainEx = day.exercises.find(e => e.isMain === true);
             const isMainSubjectToRehab = (userProfile.rehabMode === true) && Boolean(mainEx && mainEx.isUpperPush === true);
             const mainRehabMult = isMainSubjectToRehab ? 0.85 : 1.0;
@@ -1564,19 +1766,15 @@
                     const wEl = document.getElementById(`${ex.id}_s${s}_w`);
                     const rEl = document.getElementById(`${ex.id}_s${s}_r`);
                     const rirEl = document.getElementById(`${ex.id}_s${s}_rir`);
-                    const btnEl = document.getElementById(`btn_${ex.id}_s${s}`); // Pobranie przycisku statusu
+                    const btnEl = document.getElementById(`btn_${ex.id}_s${s}`); 
                     if (!wEl || !rEl) continue;
-                    if (!btnEl.classList.contains('bg-emerald-600')) {
-                        continue; 
-                    }
+                    if (!btnEl.classList.contains('bg-emerald-600')) continue; 
 
                     const weightInput = wEl.value.trim();
                     const repsInput = rEl.value.trim();
-                    if (weightInput === "" || repsInput === "" || repsInput === "0") {
-                        continue; // Pomiń niewykonaną serię, nie psuj statystyk i średniego RIR
-                    }
-                    const rirVal = rirEl ? parseInt(rirEl.value) : 2;
+                    if (weightInput === "" || repsInput === "" || repsInput === "0") continue; 
                     
+                    const rirVal = rirEl ? parseInt(rirEl.value) : 2;
                     if (!isNaN(rirVal) && rirVal < exMinRIR) {
                         exMinRIR = rirVal;
                     }
@@ -1585,16 +1783,12 @@
                     const repsNum = parseInt(repsInput) || 0;
                     const validWeight = !isNaN(weightNum) ? weightNum : 0;
 
-                    // Śledzenie najniższego wykonanego ciężaru w seriach roboczych boju głównego
                     if (ex.isMain && !(isExAmrapTest && s === 1)) {
-                        if (validWeight < minMainWeight) {
-                            minMainWeight = validWeight;
-                        }
+                        if (validWeight < minMainWeight) minMainWeight = validWeight;
                     }
                     exRepsList.push(repsNum);
                     lastWeightNum = validWeight;
 
-                    // POPRAWKA TONAŻU: Nie wliczaj ćwiczeń czasowych/dystansowych do tonażu w kg!                
                     if (!ex.isTimeOrDistance) {
                         totalVolume += (validWeight * repsNum * unilateralMult);
                     }
@@ -1612,12 +1806,11 @@
                 } else {
                     if (exMinRIR === 0) failedAccessories.push(ex.name);
 
-                    // Algorytm Podwójnej Mikroprogresji dla ćwiczeń akcesoryjnych z respektowaniem ex.step
                     const repBounds = parseRepRange(ex.reps, ex.defaultReps);
                     const accKey = `${ex.id}_${ex.isSwapped ? 'alt' : 'base'}`;
                     if (!userProfile.accessoryHistory) userProfile.accessoryHistory = {};
 
-                    const hitTopRangeAllSets = exRepsList.length > 0 && exRepsList.every(r => r >= repBounds.max);
+                    const hitTopRangeAllSets = (exRepsList.length === effectiveSets) && exRepsList.every(r => r >= repBounds.max);
                     if (!ex.isTimeOrDistance && repBounds.isRange && hitTopRangeAllSets && exMinRIR >= 1 && !userProfile.deloadMode && !userProfile.rehabMode) {
                         const step = ex.step || 1.0;
                         const nextW = Math.round((lastWeightNum + step) * 10) / 10;
@@ -1645,7 +1838,6 @@
             const jointStatus = document.getElementById('jointStatus').value;
             let feedbackParts = [];
 
-            // KROK 1: Ewaluacja wyniku boju głównego bez agresywnej autoinnkrementacji 1RM w bloku akumulacji
             if (isTestDay && amrapReps <= 0) {
                 alert("⚠️ Wprowadź poprawną liczbę powtórzeń dla serii AMRAP! Zapis wstrzymany, aby zapobiec uszkodzeniu wyliczonego rekordu 1RM.");
                 return;
@@ -1659,12 +1851,11 @@
                 if (userProfile.rehabMode === true) {
                     feedbackParts.push(`Tryb Rehab jest nadal aktywny: progresja bazowego 1RM pozostaje zablokowana do czasu ręcznego zgłoszenia pełnego wyleczenia. (Sesja ${userProfile.sessionsSinceDeload}/16 w bloku).`);
                 } else if (isTestDay) {
-                    // Tydzień Testowy AMRAP (Upper A w sesjach 13–16): wyliczenie nowego e1RM ze wzoru Epleya
+                    userProfile.amrapDoneInBlock = true;
                     let epleyRM;
                     if (amrapReps === 1) {
-                        epleyRM = amrapWeight; // 1 powtórzenie to rzeczywisty 1RM
+                        epleyRM = amrapWeight; 
                     } else if (amrapReps > 10) {
-                        // Kara za utratę dokładności Epleya powyżej 10 powt. (zaniżenie wyniku zapobiega przeciążeniu CNS w nowym bloku)
                         epleyRM = Math.round((amrapWeight * (1 + 0.0333 * amrapReps)) * 0.98 * 10) / 10; 
                     } else {
                         epleyRM = Math.round((amrapWeight * (1 + 0.0333 * amrapReps)) * 10) / 10;
@@ -1700,7 +1891,6 @@
                 feedbackParts.push(`📈 Podwójna mikroprogresja akcesoriów na kolejny trening: ${progressedAccessories.join('; ')}.`);
             }
 
-            // KROK 2: Osobny, niezależny warunek sprawdzający status bólowy stawów
             if (jointStatus === 'pain_shoulder' || jointStatus === 'pain_wrist') {
                 userProfile.rehabMode = true;
                 syncRehabSwaps();
@@ -1711,10 +1901,9 @@
             if (rawNotes) {
                 feedbackParts.push(`📝 Notatki: ${rawNotes}`);
             }
-            // Jeśli w formularzu wybrano "ok", wyłącz rehab automatycznie:
             if (jointStatus === 'ok' && userProfile.rehabMode) {
                 userProfile.rehabMode = false;
-                syncRehabSwaps(); // Przywrócenie głównych ćwiczeń pchających
+                syncRehabSwaps(); 
                 feedbackParts.push("🟢 Użytkownik zgłosił powrót do zdrowia. Tryb Rehab został wyłączony, główne boje zostały przywrócone.");
             }
             const feedbackMsg = feedbackParts.join(' ');
@@ -1740,13 +1929,11 @@
             
             alert(`✅ Trening zapisany pomyślnie!\n\nTonaż wykonany: ${logEntry.vol} kg\nEst. 1RM (${(day.mainLiftKey || 'bench').toUpperCase()}): ${currentLiftRM.toFixed(1)} kg\n\nAnaliza systemu:\n${feedbackMsg}`); 
             
-            // Po zapisie sesji zresetuj bramkę gotowości na kolejny trening
             currentSessionReadiness.started = false;
             currentSessionReadiness.lowReadiness = false;
+            sessionStorage.removeItem('sciBench_drafts');
 
             initApp();
-            
-            // Opróżnianie całego formularza po zapisu:
             document.getElementById('sessionNotes').value = "";
             document.getElementById('jointStatus').value = "ok";
             document.getElementById('techQuality').value = "Pełna kontrola";
@@ -1869,14 +2056,14 @@
                     workoutLogs.splice(logIndex, 1);
                     localStorage.setItem('sciBench_logs_v8', JSON.stringify(workoutLogs));
                     initApp();
-                    switchView('history'); // <--- Zatrzymuje użytkownika w zakładce historii
+                    switchView('history'); 
                 }
             } else {
                 if (confirm("Usuwasz starszy trening. Zniknie on z historii, ale Twój obecny 1RM i licznik bloku nie zostaną zmienione. Kontynuować?")) {
                     workoutLogs.splice(logIndex, 1);
                     localStorage.setItem('sciBench_logs_v8', JSON.stringify(workoutLogs));
                     initApp();
-                    switchView('history'); // <--- Zatrzymuje użytkownika w zakładce historii
+                    switchView('history'); 
                 }
             }
         }
@@ -1965,7 +2152,6 @@ ANALIZA ADAPTACJI I AUTOREGULACJA:
             alert("Ustawienia 1RM zostały zaktualizowane, a ciężary przeliczone.");
         }
 
-        // MODUŁ EKSPORTU / IMPORTU JSON
         function exportBackupJSON() {
             const backupPayload = {
                 version: "v8",
@@ -2008,7 +2194,9 @@ ANALIZA ADAPTACJI I AUTOREGULACJA:
                         rehabMode: Boolean(importedProfile.rehabMode),
                         deloadMode: Boolean(importedProfile.deloadMode),
                         sessionsSinceDeload: importedProfile.sessionsSinceDeload || 0,
-                        accessoryHistory: importedProfile.accessoryHistory || {}
+                        accessoryHistory: importedProfile.accessoryHistory || {},
+                        swaps: importedProfile.swaps || {},
+                        amrapDoneInBlock: Boolean(importedProfile.amrapDoneInBlock)
                     };
                     workoutLogs = importedLogs;
 
@@ -2052,7 +2240,41 @@ ANALIZA ADAPTACJI I AUTOREGULACJA:
             
             initApp(); 
         }
-
+        document.getElementById('exercisesContainer').addEventListener('input', (e) => {
+            if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') saveDraftState();
+        });
+        document.getElementById('exercisesContainer').addEventListener('click', (e) => {
+            if(e.target.classList.contains('set-check')) setTimeout(saveDraftState, 50); 
+        });
+        
+        function saveDraftState() {
+            const dayKey = userProfile.activeDay;
+            let allDrafts = JSON.parse(sessionStorage.getItem('sciBench_drafts')) || {};
+            
+            const draft = { inputs: {}, checks: {} };
+            document.querySelectorAll('#exercisesContainer input, #exercisesContainer select').forEach(el => draft.inputs[el.id] = el.value);
+            document.querySelectorAll('#exercisesContainer .set-check').forEach(el => draft.checks[el.id] = el.classList.contains('bg-emerald-600'));
+            
+            allDrafts[dayKey] = draft;
+            sessionStorage.setItem('sciBench_drafts', JSON.stringify(allDrafts));
+        }
+        
+        function restoreDraftState() {
+            const dayKey = userProfile.activeDay;
+            const allDrafts = JSON.parse(sessionStorage.getItem('sciBench_drafts')) || {};
+            const draft = allDrafts[dayKey];
+            
+            if (!draft) return;
+            document.querySelectorAll('#exercisesContainer input, #exercisesContainer select').forEach(el => {
+                if(draft.inputs[el.id] !== undefined) el.value = draft.inputs[el.id];
+            });
+            document.querySelectorAll('#exercisesContainer .set-check').forEach(el => {
+                if(draft.checks[el.id]) {
+                    el.classList.add('bg-emerald-600', 'border-emerald-500', 'text-white');
+                    el.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-400');
+                }
+            });
+        }
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
